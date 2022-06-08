@@ -16,7 +16,7 @@ data "aws_route53_zone" "this" {
 }
 
 module "vpc" {
-  source                   = "github.com/champ-oss/terraform-aws-vpc.git?ref=v1.0.15-baab48e"
+  source                   = "github.com/champ-oss/terraform-aws-vpc.git?ref=v1.0.18-7d4b0d1"
   git                      = local.git
   availability_zones_count = 2
   retention_in_days        = 1
@@ -24,7 +24,7 @@ module "vpc" {
 }
 
 module "acm" {
-  source            = "github.com/champ-oss/terraform-aws-acm.git?ref=v1.0.31-dabb6ad"
+  source            = "github.com/champ-oss/terraform-aws-acm.git?ref=v1.0.34-4a76865"
   git               = local.git
   domain_name       = "${local.git}.${data.aws_route53_zone.this.name}"
   create_wildcard   = false
