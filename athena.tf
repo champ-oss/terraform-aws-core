@@ -2,6 +2,7 @@ resource "aws_athena_database" "this" {
   name          = replace(aws_s3_bucket.this.bucket, "-", "_")
   bucket        = aws_s3_bucket.this.bucket
   force_destroy = !var.protect
+  comment       = var.git
 }
 
 resource "aws_athena_named_query" "this" {
