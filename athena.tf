@@ -2,13 +2,15 @@ resource "aws_athena_database" "this" {
   name          = replace(aws_s3_bucket.this.bucket, "-", "_")
   bucket        = aws_s3_bucket.this.bucket
   force_destroy = !var.protect
+  comment       = var.git
 }
 
 resource "aws_athena_named_query" "this" {
-  name      = replace(aws_s3_bucket.this.bucket, "-", "_")
-  workgroup = var.athena_workgroup
-  database  = aws_athena_database.this.name
-  query     = <<EOT
+  name        = replace(aws_s3_bucket.this.bucket, "-", "_")
+  description = var.git
+  workgroup   = var.athena_workgroup
+  database    = aws_athena_database.this.name
+  query       = <<EOT
 CREATE EXTERNAL TABLE IF NOT EXISTS alb_logs (
             type string,
             time string,
