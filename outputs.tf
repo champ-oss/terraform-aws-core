@@ -18,6 +18,16 @@ output "execution_ecs_role_name" {
   value       = aws_iam_role.this.name
 }
 
+output "lb_private_arn" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#arn"
+  value       = aws_lb.private.arn
+}
+
+output "lb_public_arn" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#arn"
+  value       = aws_lb.public.arn
+}
+
 output "lb_private_listener_arn" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#arn"
   value       = aws_lb_listener.private_https.arn
