@@ -1,5 +1,9 @@
+terraform {
+  backend "s3" {}
+}
+
 provider "aws" {
-  region = "us-west-2"
+  region = "us-east-2"
 }
 
 locals {
@@ -15,12 +19,34 @@ data "aws_route53_zone" "this" {
   name = "oss.champtest.net."
 }
 
-module "vpc" {
-  source                   = "github.com/champ-oss/terraform-aws-vpc.git?ref=v1.0.39-9596bfc"
-  git                      = local.git
-  availability_zones_count = 2
-  retention_in_days        = 1
-  create_private_subnets   = true
+data "aws_vpcs" "this" {
+  tags = {
+    purpose = "vega"
+  }
+}
+
+data "aws_subnets" "private" {
+  tags = {
+    purpose = "vega"
+    Type    = "Private"
+  }
+
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpcs.this.ids[0]]
+  }
+}
+
+data "aws_subnets" "public" {
+  tags = {
+    purpose = "vega"
+    Type    = "Public"
+  }
+
+  filter {
+    name   = "vpc-id"
+    values = [data.aws_vpcs.this.ids[0]]
+  }
 }
 
 module "acm" {
@@ -36,9 +62,9 @@ module "this" {
   source                    = "../../"
   name                      = local.git
   git                       = local.git
-  public_subnet_ids         = module.vpc.public_subnets_ids
-  private_subnet_ids        = module.vpc.private_subnets_ids
-  vpc_id                    = module.vpc.vpc_id
+  public_subnet_ids         = data.aws_subnets.public.ids
+  private_subnet_ids        = data.aws_subnets.private.ids
+  vpc_id                    = data.aws_vpcs.this.ids[0]
   certificate_arn           = module.acm.arn
   protect                   = false
   enable_container_insights = true
@@ -75,6 +101,6 @@ resource "aws_ecs_service" "this" {
 
   network_configuration {
     security_groups = [module.this.ecs_app_security_group]
-    subnets         = module.vpc.private_subnets_ids
+    subnets         = data.aws_subnets.private.ids
   }
 }
