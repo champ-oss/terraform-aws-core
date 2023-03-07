@@ -19,8 +19,6 @@ data "aws_route53_zone" "this" {
   name = "oss.champtest.net."
 }
 
-data "aws_region" "current" {}
-
 data "aws_vpcs" "this" {
   tags = {
     purpose = "vega"
