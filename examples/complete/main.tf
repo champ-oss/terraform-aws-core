@@ -103,6 +103,6 @@ resource "aws_ecs_service" "this" {
 
   network_configuration {
     security_groups = [module.this.ecs_app_security_group]
-    subnets         = module.vpc.private_subnets_ids
+    subnets         = data.aws_subnets.private.ids
   }
 }
