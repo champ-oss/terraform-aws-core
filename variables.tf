@@ -95,11 +95,13 @@ variable "load_balancer_type" {
 variable "default_action_redirect" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
   type        = any
-  default = [{
-    port : 443,
-    protocol : "HTTPS"
-    status_code : "HTTP_301",
-  }]
+  default = {
+    redirect = {
+      port : 443,
+      protocol : "HTTPS"
+      status_code : "HTTP_301",
+    }
+  }
 }
 
 variable "default_action_fixed_response" {
