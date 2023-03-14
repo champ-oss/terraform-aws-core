@@ -85,3 +85,29 @@ variable "athena_workgroup" {
   type        = string
   default     = "primary"
 }
+
+variable "load_balancer_type" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#load_balancer_type"
+  type        = string
+  default     = "application"
+}
+
+variable "default_action_redirect" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
+  type        = list(map(any))
+  default = [{
+    port : "443",
+    protocol : "HTTPS"
+    status_code : "HTTP_301",
+  }]
+}
+
+variable "default_action_fixed_response" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
+  type        = list(map(any))
+  default = [{
+    content_type : "text/plain",
+    message_body : "No valid routing rule"
+    status_code : "400",
+  }]
+}
