@@ -24,7 +24,7 @@ resource "aws_lb_listener" "public_http" {
   protocol          = var.load_balancer_type == "application" ? "HTTP" : "TCP"
 
   default_action {
-    type = var.default_action_redirect_type
+    type = var.default_action_redirect.type
 
     dynamic "redirect" {
       for_each = var.default_action_redirect != null ? var.default_action_redirect : []
