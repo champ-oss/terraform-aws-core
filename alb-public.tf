@@ -23,16 +23,14 @@ resource "aws_lb_listener" "public_http" {
   port              = "80"
   protocol          = var.load_balancer_type == "application" ? "HTTP" : "TCP"
 
-  default_action {
-    type = var.default_action_redirect.type
-
-    dynamic "redirect" {
-      for_each = var.default_action_redirect != null ? var.default_action_redirect : []
-
-      content {
+  dynamic "default_action" {
+    for_each = var.default_action_redirect != null ? [var.default_action_redirect] : []
+    content {
+      type = "redirect"
+      redirect {
+        status_code = redirect.value.status_code
         port        = redirect.value.port
         protocol    = redirect.value.protocol
-        status_code = redirect.value.status_code
       }
     }
   }
@@ -50,13 +48,11 @@ resource "aws_lb_listener" "public_https" {
   ssl_policy        = var.load_balancer_type == "application" ? var.ssl_policy : ""
   certificate_arn   = var.load_balancer_type == "application" ? var.certificate_arn : ""
 
-  default_action {
-    type = var.default_action_fixed_response.type
-
-    dynamic "fixed_response" {
-      for_each = var.default_action_fixed_response != null ? var.default_action_fixed_response : []
-
-      content {
+  dynamic "default_action" {
+    for_each = var.default_action_fixed_response != null ? [var.default_action_fixed_response] : []
+    content {
+      type = "fixed-response"
+      fixed_response {
         content_type = fixed_response.value.content_type
         message_body = fixed_response.value.message_body
         status_code  = fixed_response.value.status_code
