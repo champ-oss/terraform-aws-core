@@ -94,9 +94,9 @@ variable "load_balancer_type" {
 
 variable "default_action_redirect" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
-  type        = list(map(any))
+  type        = any
   default = [{
-    port : "443",
+    port : 443,
     protocol : "HTTPS"
     status_code : "HTTP_301",
   }]
@@ -104,10 +104,12 @@ variable "default_action_redirect" {
 
 variable "default_action_fixed_response" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
-  type        = list(map(any))
-  default = [{
-    content_type : "text/plain",
-    message_body : "No valid routing rule"
-    status_code : "400",
-  }]
+  type        = any
+  default = {
+    fixed_response = {
+      content_type : "text/plain",
+      message_body : "No valid routing rule"
+      status_code : 400,
+    }
+  }
 }
