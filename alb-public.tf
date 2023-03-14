@@ -52,9 +52,9 @@ resource "aws_lb_listener" "public_https" {
   dynamic "default_action" {
     for_each = var.default_action_fixed_response != null ? var.default_action_redirect : []
     content {
-      type = "fixed-response"
+      type = "fixed_response"
 
-      fixed-response {
+      fixed_response {
         content_type = default_action_fixed_response.value.content_type
         message_body = default_action_fixed_response.value.message_body
         status_code  = default_action_fixed_response.value.status_code
