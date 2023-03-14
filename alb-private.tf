@@ -30,9 +30,9 @@ resource "aws_lb_listener" "private_http" {
       for_each = var.default_action_redirect != null ? var.default_action_redirect : []
 
       content {
-        port        = default_action_redirect.value.port
-        protocol    = default_action_redirect.value.protocol
-        status_code = default_action_redirect.value.status_code
+        port        = redirect.value.port
+        protocol    = redirect.value.protocol
+        status_code = redirect.value.status_code
       }
     }
   }
@@ -59,9 +59,9 @@ resource "aws_lb_listener" "private_https" {
       for_each = var.default_action_fixed_response != null ? var.default_action_fixed_response : []
 
       content {
-        content_type = default_action_fixed_response.value.content_type
-        message_body = default_action_fixed_response.value.message_body
-        status_code  = default_action_fixed_response.value.status_code
+        content_type = fixed_response.value.content_type
+        message_body = fixed_response.value.message_body
+        status_code  = fixed_response.value.status_code
       }
     }
   }
