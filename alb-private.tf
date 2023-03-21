@@ -1,11 +1,10 @@
 resource "aws_lb" "private" {
-  depends_on         = [aws_s3_bucket.this, aws_s3_bucket_policy.this]
-  name_prefix        = "lb-pv-"
-  load_balancer_type = var.load_balancer_type
-  security_groups    = var.load_balancer_type == "application" ? [aws_security_group.alb.id] : []
-  subnets            = var.private_subnet_ids
-  tags               = merge(local.tags, var.tags)
-  internal           = true
+  depends_on      = [aws_s3_bucket.this, aws_s3_bucket_policy.this]
+  name_prefix     = "lb-pv-"
+  security_groups = [aws_security_group.alb.id]
+  subnets         = var.private_subnet_ids
+  tags            = merge(local.tags, var.tags)
+  internal        = true
 
   access_logs {
     bucket  = aws_s3_bucket.this.bucket
@@ -21,17 +20,15 @@ resource "aws_lb_listener" "private_http" {
   load_balancer_arn = aws_lb.private.arn
   depends_on        = [aws_lb.private] # https://github.com/terraform-providers/terraform-provider-aws/issues/9976
   port              = "80"
-  protocol          = var.load_balancer_type == "application" ? "HTTP" : "TCP"
+  protocol          = "HTTP"
 
-  dynamic "default_action" {
-    for_each = var.default_action_redirect != null ? [var.default_action_redirect] : []
-    content {
-      type = "redirect"
-      redirect {
-        status_code = redirect.value.status_code
-        port        = redirect.value.port
-        protocol    = redirect.value.protocol
-      }
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
     }
   }
 
@@ -44,20 +41,17 @@ resource "aws_lb_listener" "private_https" {
   load_balancer_arn = aws_lb.private.arn
   depends_on        = [aws_lb.private] # https://github.com/terraform-providers/terraform-provider-aws/issues/9976
   port              = "443"
-  protocol          = var.load_balancer_type == "application" ? "HTTPS" : "TCP"
-  ssl_policy        = var.load_balancer_type == "application" ? var.ssl_policy : ""
-  certificate_arn   = var.load_balancer_type == "application" ? var.certificate_arn : ""
+  protocol          = "HTTPS"
+  ssl_policy        = var.ssl_policy
+  certificate_arn   = var.certificate_arn
 
+  default_action {
+    type = "fixed-response"
 
-  dynamic "default_action" {
-    for_each = var.default_action_fixed_response != null ? [var.default_action_fixed_response] : []
-    content {
-      type = "fixed-response"
-      fixed_response {
-        content_type = fixed_response.value.content_type
-        message_body = fixed_response.value.message_body
-        status_code  = fixed_response.value.status_code
-      }
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "No valid routing rule"
+      status_code  = "400"
     }
   }
 

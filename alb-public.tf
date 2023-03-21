@@ -21,17 +21,15 @@ resource "aws_lb_listener" "public_http" {
   load_balancer_arn = aws_lb.public.arn
   depends_on        = [aws_lb.public] # https://github.com/terraform-providers/terraform-provider-aws/issues/9976
   port              = "80"
-  protocol          = var.load_balancer_type == "application" ? "HTTP" : "TCP"
+  protocol          = "HTTP"
 
-  dynamic "default_action" {
-    for_each = var.default_action_redirect != null ? [var.default_action_redirect] : []
-    content {
-      type = "redirect"
-      redirect {
-        status_code = redirect.value.status_code
-        port        = redirect.value.port
-        protocol    = redirect.value.protocol
-      }
+  default_action {
+    type = "redirect"
+
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
     }
   }
 
@@ -49,13 +47,15 @@ resource "aws_lb_listener" "public_https" {
   certificate_arn   = var.load_balancer_type == "application" ? var.certificate_arn : ""
 
   dynamic "default_action" {
-    for_each = var.default_action_fixed_response != null ? [var.default_action_fixed_response] : []
+    for_each = var.default_action == "fixed-response" ? 1 : 0
+
     content {
       type = "fixed-response"
+
       fixed_response {
-        content_type = fixed_response.value.content_type
-        message_body = fixed_response.value.message_body
-        status_code  = fixed_response.value.status_code
+        content_type = var.fixed_response_content_type
+        message_body = var.fixed_response_message_body
+        status_code  = var.fixed_response_status_code
       }
     }
   }

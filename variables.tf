@@ -92,22 +92,26 @@ variable "load_balancer_type" {
   default     = "application"
 }
 
-variable "default_action_redirect" {
+variable "default_action" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
-  type        = map(any)
-  default = {
-    port : "443",
-    protocol : "HTTPS"
-    status_code : "HTTP_301",
-  }
+  type        = string
+  default     = "fixed-response"
 }
 
-variable "default_action_fixed_response" {
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
-  type        = map(any)
-  default = {
-    content_type : "text/plain",
-    message_body : "No valid routing rule"
-    status_code : "400",
-  }
+variable "fixed_response_content_type" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
+  type        = string
+  default     = "text/plain"
+}
+
+variable "fixed_response_message_body" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
+  type        = string
+  default     = "No valid routing rule"
+}
+
+variable "fixed_response_status_code" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
+  type        = string
+  default     = "400"
 }
