@@ -20,15 +20,19 @@ resource "aws_lb_listener" "private_http" {
   load_balancer_arn = aws_lb.private.arn
   depends_on        = [aws_lb.private] # https://github.com/terraform-providers/terraform-provider-aws/issues/9976
   port              = "80"
-  protocol          = "HTTP"
+  protocol          = var.load_balancer_type == "application" ? "HTTP" : "TCP"
 
-  default_action {
-    type = "redirect"
+  dynamic "default_action" {
+    for_each = try([var.default_action_redirect], [])
 
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
+    content {
+      type = "redirect"
+
+      redirect {
+        port        = var.redirect_port
+        protocol    = var.redirect_protocol
+        status_code = var.redirect_status_code
+      }
     }
   }
 
@@ -41,17 +45,21 @@ resource "aws_lb_listener" "private_https" {
   load_balancer_arn = aws_lb.private.arn
   depends_on        = [aws_lb.private] # https://github.com/terraform-providers/terraform-provider-aws/issues/9976
   port              = "443"
-  protocol          = "HTTPS"
-  ssl_policy        = var.ssl_policy
-  certificate_arn   = var.certificate_arn
+  protocol          = var.load_balancer_type == "application" ? "HTTPS" : "TCP"
+  ssl_policy        = var.load_balancer_type == "application" ? var.ssl_policy : ""
+  certificate_arn   = var.load_balancer_type == "application" ? var.certificate_arn : ""
 
-  default_action {
-    type = "fixed-response"
+  dynamic "default_action" {
+    for_each = try([var.default_action_fixed_response], [])
 
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "No valid routing rule"
-      status_code  = "400"
+    content {
+      type = "fixed-response"
+
+      fixed_response {
+        content_type = var.fixed_response_content_type
+        message_body = var.fixed_response_message_body
+        status_code  = var.fixed_response_status_code
+      }
     }
   }
 
