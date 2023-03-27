@@ -47,7 +47,7 @@ resource "aws_lb_listener" "public_https" {
   certificate_arn   = var.load_balancer_type == "application" ? var.certificate_arn : ""
 
   dynamic "default_action" {
-    for_each = var.default_action == "fixed-response" ? 1 : 0
+    for_each = try([var.default_action_fixed_response], [])
 
     content {
       type = "fixed-response"

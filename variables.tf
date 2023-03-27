@@ -92,7 +92,7 @@ variable "load_balancer_type" {
   default     = "application"
 }
 
-variable "default_action" {
+variable "default_action_fixed_response" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
   type        = string
   default     = "fixed-response"
