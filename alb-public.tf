@@ -36,15 +36,6 @@ resource "aws_lb_listener" "public_http" {
       }
     }
   }
-  default_action {
-    type = "redirect"
-
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
-    }
-  }
 
   lifecycle {
     create_before_destroy = true
