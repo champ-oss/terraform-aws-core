@@ -63,19 +63,6 @@ resource "aws_lb_listener" "private_https" {
     }
   }
 
-  dynamic "default_action" {
-    for_each = try([var.default_action_forward], [])
-
-    content {
-      type = "forward"
-
-      forward {
-        arn    = var.forward_arn
-        weight = var.forward_weight
-      }
-    }
-  }
-
   lifecycle {
     create_before_destroy = true
   }
