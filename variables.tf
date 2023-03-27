@@ -107,7 +107,7 @@ variable "default_action_redirect" {
 variable "default_action_forward" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
   type        = string
-  default     = ""
+  default     = null
 }
 
 variable "fixed_response_content_type" {
