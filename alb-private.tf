@@ -47,7 +47,7 @@ resource "aws_lb_listener" "private_https" {
   port              = "443"
   protocol          = var.load_balancer_type == "application" ? "HTTPS" : "TCP"
   ssl_policy        = var.load_balancer_type == "application" ? var.ssl_policy : ""
-  certificate_arn   = var.load_balancer_type == "application" ? var.certificate_arn : ""
+  certificate_arn   = var.certificate_arn
 
   dynamic "default_action" {
     for_each = try([var.default_action_fixed_response], [])
@@ -59,6 +59,19 @@ resource "aws_lb_listener" "private_https" {
         content_type = var.fixed_response_content_type
         message_body = var.fixed_response_message_body
         status_code  = var.fixed_response_status_code
+      }
+    }
+  }
+
+  dynamic "default_action" {
+    for_each = try([var.default_action_forward], [])
+
+    content {
+      type = "forward"
+
+      forward {
+        arn    = var.forward_arn
+        weight = var.forward_weight
       }
     }
   }

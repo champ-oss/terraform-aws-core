@@ -104,6 +104,12 @@ variable "default_action_redirect" {
   default     = "redirect"
 }
 
+variable "default_action_forward" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
+  type        = string
+  default     = ""
+}
+
 variable "fixed_response_content_type" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
   type        = string
@@ -138,4 +144,16 @@ variable "redirect_status_code" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
   type        = string
   default     = "HTTP_301"
+}
+
+variable "forward_arn" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
+  type        = string
+  default     = ""
+}
+
+variable "forward_weight" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
+  type        = string
+  default     = ""
 }
