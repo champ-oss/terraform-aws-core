@@ -98,7 +98,7 @@ variable "default_action_fixed_response" {
   default     = "fixed-response"
 }
 
-variable "default_action_redirect" {
+variable "default_action_http" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
   type        = string
   default     = "redirect"
@@ -152,11 +152,11 @@ variable "aws_lb_target_group" {
   default     = ""
 }
 
-variable "default_action_fixed" {
+variable "default_action_redirect" {
   type        = any
   description = "(Required) Configuration block for default actions."
   default = {
-    fixed_response = {
+    redirect_response = {
       content_type = "plain/text"
       message_body = "No valid routing rule"
       status_code  = 400

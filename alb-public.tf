@@ -25,10 +25,10 @@ resource "aws_lb_listener" "public_http" {
 
 
   default_action {
-    type = var.default_action_fixed.type
+    type = var.default_action_http
 
     dynamic "redirect" {
-      for_each = try([var.default_action_fixed.fixed_response], [])
+      for_each = try([var.default_action_redirect.redirect_response], [])
 
       content {
         port        = redirect.value.port
