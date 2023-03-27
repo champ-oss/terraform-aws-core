@@ -23,12 +23,39 @@ resource "aws_lb_listener" "private_http" {
   protocol          = var.load_balancer_type == "application" ? "HTTP" : "TCP"
 
   default_action {
-    type = "redirect"
+    type = var.default_action_http
 
-    redirect {
-      port        = "443"
-      protocol    = "HTTPS"
-      status_code = "HTTP_301"
+    dynamic "redirect" {
+      for_each = try([var.default_action_redirect.redirect_response], [])
+
+      content {
+        port        = redirect.value.port
+        protocol    = redirect.value.protocol
+        status_code = redirect.value.status_code
+      }
+    }
+    dynamic "forward" {
+      for_each = try([var.default_action_forward.forward], [])
+
+      content {
+        dynamic "target_group" {
+          for_each = forward.value.target_groups
+
+          content {
+            arn    = target_group.value.arn
+            weight = try(target_group.value.weight, null)
+          }
+        }
+
+        dynamic "stickiness" {
+          for_each = try([forward.value.stickiness], [])
+
+          content {
+            duration = stickiness.value.duration
+            enabled  = try(stickiness.value.enabled, false)
+          }
+        }
+      }
     }
   }
 
@@ -46,12 +73,39 @@ resource "aws_lb_listener" "private_https" {
   certificate_arn   = var.certificate_arn
 
   default_action {
-    type = "fixed-response"
+    type = var.default_action_https
 
-    fixed_response {
-      content_type = "text/plain"
-      message_body = "No valid routing rule"
-      status_code  = "400"
+    dynamic "fixed_response" {
+      for_each = try([var.default_action_fixed_response.fixed_response], [])
+
+      content {
+        content_type = fixed_response.value.content_type
+        message_body = fixed_response.value.message_body
+        status_code  = fixed_response.value.status_code
+      }
+    }
+    dynamic "forward" {
+      for_each = try([var.default_action_forward.forward], [])
+
+      content {
+        dynamic "target_group" {
+          for_each = forward.value.target_groups
+
+          content {
+            arn    = target_group.value.arn
+            weight = try(target_group.value.weight, null)
+          }
+        }
+
+        dynamic "stickiness" {
+          for_each = try([forward.value.stickiness], [])
+
+          content {
+            duration = stickiness.value.duration
+            enabled  = try(stickiness.value.enabled, false)
+          }
+        }
+      }
     }
   }
 

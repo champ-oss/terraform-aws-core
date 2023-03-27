@@ -92,59 +92,16 @@ variable "load_balancer_type" {
   default     = "application"
 }
 
-variable "default_action_fixed_response" {
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
-  type        = string
-  default     = "fixed-response"
-}
-
 variable "default_action_http" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
   type        = string
   default     = "redirect"
 }
 
-
-variable "fixed_response_content_type" {
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
+variable "default_action_https" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
   type        = string
-  default     = "text/plain"
-}
-
-variable "fixed_response_message_body" {
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
-  type        = string
-  default     = "No valid routing rule"
-}
-
-variable "fixed_response_status_code" {
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
-  type        = string
-  default     = "400"
-}
-
-variable "redirect_port" {
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
-  type        = string
-  default     = "443"
-}
-
-variable "redirect_protocol" {
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
-  type        = string
-  default     = "HTTPS"
-}
-
-variable "redirect_status_code" {
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
-  type        = string
-  default     = "HTTP_301"
-}
-
-variable "aws_lb_target_group" {
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
-  type        = string
-  default     = ""
+  default     = "fixed-response"
 }
 
 variable "default_action_redirect" {
@@ -155,6 +112,18 @@ variable "default_action_redirect" {
       port        = "443"
       protocol    = "HTTPS"
       status_code = "HTTP_301"
+    }
+  }
+}
+
+variable "default_action_fixed_response" {
+  type        = any
+  description = "(Required) Configuration block for default actions."
+  default = {
+    fixed_response = {
+      message_body = "No valid routing rule"
+      content_type = "text/plain"
+      status_code  = "400"
     }
   }
 }
