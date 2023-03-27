@@ -146,13 +146,7 @@ variable "redirect_status_code" {
   default     = "HTTP_301"
 }
 
-variable "forward_arn" {
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
-  type        = string
-  default     = ""
-}
-
-variable "forward_weight" {
+variable "aws_lb_target_group" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
   type        = string
   default     = ""

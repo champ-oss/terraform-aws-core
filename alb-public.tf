@@ -82,12 +82,8 @@ resource "aws_lb_listener" "public_https" {
     for_each = try([var.default_action_forward], [])
 
     content {
-      type = "forward"
-
-      forward {
-        arn    = var.forward_arn
-        weight = var.forward_weight
-      }
+      type             = "forward"
+      target_group_arn = var.aws_lb_target_group
     }
   }
 
