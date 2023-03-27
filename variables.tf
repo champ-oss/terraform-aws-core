@@ -98,6 +98,12 @@ variable "default_action_fixed_response" {
   default     = "fixed-response"
 }
 
+variable "default_action_redirect" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
+  type        = string
+  default     = "redirect"
+}
+
 variable "fixed_response_content_type" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
   type        = string
@@ -114,4 +120,22 @@ variable "fixed_response_status_code" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
   type        = string
   default     = "400"
+}
+
+variable "redirect_port" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
+  type        = string
+  default     = "443"
+}
+
+variable "redirect_protocol" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
+  type        = string
+  default     = "HTTPS"
+}
+
+variable "redirect_status_code" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
+  type        = string
+  default     = "HTTP_301"
 }

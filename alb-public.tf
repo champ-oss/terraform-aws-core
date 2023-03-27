@@ -21,8 +21,21 @@ resource "aws_lb_listener" "public_http" {
   load_balancer_arn = aws_lb.public.arn
   depends_on        = [aws_lb.public] # https://github.com/terraform-providers/terraform-provider-aws/issues/9976
   port              = "80"
-  protocol          = "HTTP"
+  protocol          = var.load_balancer_type == "application" ? "HTTP" : "TCP"
 
+  dynamic "default_action" {
+    for_each = try([var.default_action_redirect], [])
+
+    content {
+      type = "redirect"
+
+      redirect {
+        port        = var.redirect_port
+        protocol    = var.redirect_protocol
+        status_code = var.redirect_status_code
+      }
+    }
+  }
   default_action {
     type = "redirect"
 
