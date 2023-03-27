@@ -22,17 +22,13 @@ resource "aws_lb_listener" "private_http" {
   port              = "80"
   protocol          = var.load_balancer_type == "application" ? "HTTP" : "TCP"
 
-  dynamic "default_action" {
-    for_each = try([var.default_action_redirect], [])
+  default_action {
+    type = "redirect"
 
-    content {
-      type = "redirect"
-
-      redirect {
-        port        = var.redirect_port
-        protocol    = var.redirect_protocol
-        status_code = var.redirect_status_code
-      }
+    redirect {
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
     }
   }
 
@@ -49,17 +45,13 @@ resource "aws_lb_listener" "private_https" {
   ssl_policy        = var.load_balancer_type == "application" ? var.ssl_policy : ""
   certificate_arn   = var.certificate_arn
 
-  dynamic "default_action" {
-    for_each = try([var.default_action_fixed_response], [])
+  default_action {
+    type = "fixed-response"
 
-    content {
-      type = "fixed-response"
-
-      fixed_response {
-        content_type = var.fixed_response_content_type
-        message_body = var.fixed_response_message_body
-        status_code  = var.fixed_response_status_code
-      }
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "No valid routing rule"
+      status_code  = "400"
     }
   }
 

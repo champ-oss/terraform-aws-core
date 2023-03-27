@@ -151,3 +151,15 @@ variable "aws_lb_target_group" {
   type        = string
   default     = ""
 }
+
+variable "default_action_fixed" {
+  type        = any
+  description = "(Required) Configuration block for default actions."
+  default = {
+    fixed_response = {
+      content_type = "plain/text"
+      message_body = "No valid routing rule"
+      status_code  = 400
+    }
+  }
+}

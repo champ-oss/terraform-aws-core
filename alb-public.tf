@@ -23,30 +23,17 @@ resource "aws_lb_listener" "public_http" {
   port              = "80"
   protocol          = var.load_balancer_type == "application" ? "HTTP" : "TCP"
 
-  dynamic "default_action" {
-    for_each = try([var.default_action_redirect], [])
 
-    content {
-      type = "redirect"
+  default_action {
+    type = var.default_action_fixed.type
 
-      redirect {
-        port        = var.redirect_port
-        protocol    = var.redirect_protocol
-        status_code = var.redirect_status_code
-      }
-    }
-  }
+    dynamic "redirect" {
+      for_each = try([var.default_action_fixed.fixed_response], [])
 
-  dynamic "default_action" {
-    for_each = try([var.default_action_forward], [])
-
-    content {
-      type = "forward"
-
-      redirect {
-        port        = var.redirect_port
-        protocol    = var.redirect_protocol
-        status_code = var.redirect_status_code
+      content {
+        port        = redirect.value.port
+        protocol    = redirect.value.protocol
+        status_code = redirect.value.status_code
       }
     }
   }
@@ -64,26 +51,13 @@ resource "aws_lb_listener" "public_https" {
   ssl_policy        = var.load_balancer_type == "application" ? var.ssl_policy : ""
   certificate_arn   = var.certificate_arn
 
-  dynamic "default_action" {
-    for_each = try([var.default_action_fixed_response], [])
+  default_action {
+    type = "fixed-response"
 
-    content {
-      type = "fixed-response"
-
-      fixed_response {
-        content_type = var.fixed_response_content_type
-        message_body = var.fixed_response_message_body
-        status_code  = var.fixed_response_status_code
-      }
-    }
-  }
-
-  dynamic "default_action" {
-    for_each = try([var.default_action_forward], [])
-
-    content {
-      type             = "forward"
-      target_group_arn = var.aws_lb_target_group
+    fixed_response {
+      content_type = "text/plain"
+      message_body = "No valid routing rule"
+      status_code  = "400"
     }
   }
 
