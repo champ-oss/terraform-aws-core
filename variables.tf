@@ -157,9 +157,9 @@ variable "default_action_redirect" {
   description = "(Required) Configuration block for default actions."
   default = {
     redirect_response = {
-      content_type = "plain/text"
-      message_body = "No valid routing rule"
-      status_code  = 400
+      port        = "443"
+      protocol    = "HTTPS"
+      status_code = "HTTP_301"
     }
   }
 }
