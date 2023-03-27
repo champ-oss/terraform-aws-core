@@ -37,7 +37,7 @@ resource "aws_lb_listener" "public_http" {
       }
     }
     dynamic "forward" {
-      for_each = try([var.default_action_forward.forward_response], [])
+      for_each = try([var.default_action_forward.forward], [])
 
       content {
         dynamic "target_group" {
@@ -48,14 +48,14 @@ resource "aws_lb_listener" "public_http" {
             weight = try(target_group.value.weight, null)
           }
         }
-      }
 
-      dynamic "stickiness" {
-        for_each = try([forward.value.stickiness], [])
+        dynamic "stickiness" {
+          for_each = try([forward.value.stickiness], [])
 
-        content {
-          duration = stickiness.value.duration
-          enabled  = try(stickiness.value.enabled, false)
+          content {
+            duration = stickiness.value.duration
+            enabled  = try(stickiness.value.enabled, false)
+          }
         }
       }
     }
