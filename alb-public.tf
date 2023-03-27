@@ -36,6 +36,29 @@ resource "aws_lb_listener" "public_http" {
         status_code = redirect.value.status_code
       }
     }
+    dynamic "forward" {
+      for_each = try([var.default_action_forward.forward_response], [])
+
+      content {
+        dynamic "target_group" {
+          for_each = forward.value.target_groups
+
+          content {
+            arn    = target_group.value.arn
+            weight = try(target_group.value.weight, null)
+          }
+        }
+      }
+
+      dynamic "stickiness" {
+        for_each = try([forward.value.stickiness], [])
+
+        content {
+          duration = stickiness.value.duration
+          enabled  = try(stickiness.value.enabled, false)
+        }
+      }
+    }
   }
 
   lifecycle {

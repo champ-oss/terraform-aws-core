@@ -104,11 +104,6 @@ variable "default_action_http" {
   default     = "redirect"
 }
 
-variable "default_action_forward" {
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
-  type        = string
-  default     = null
-}
 
 variable "fixed_response_content_type" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#status_code"
@@ -162,4 +157,10 @@ variable "default_action_redirect" {
       status_code = "HTTP_301"
     }
   }
+}
+
+variable "default_action_forward" {
+  type        = any
+  description = "(Required) Configuration block for default actions."
+  default     = null
 }
