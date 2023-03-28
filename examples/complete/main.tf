@@ -84,16 +84,11 @@ module "this" {
   load_balancer_type            = "network"
   default_action_http           = "forward"
   default_action_https          = "forward"
+  target_group_arn              = aws_lb_target_group.this.arn
   certificate_arn               = ""
   default_action_redirect       = null
   default_action_fixed_response = null
-  default_action_forward = {
-    forward = {
-      target_groups = {
-        arn = aws_lb_target_group.this.id
-      }
-    }
-  }
+
 }
 
 resource "aws_lb_target_group" "this" {

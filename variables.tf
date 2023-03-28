@@ -128,8 +128,8 @@ variable "default_action_fixed_response" {
   }
 }
 
-variable "default_action_forward" {
-  type        = any
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
+variable "target_group_arn" {
+  type        = string
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#target_group_arn"
   default     = null
 }

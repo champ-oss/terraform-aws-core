@@ -23,7 +23,8 @@ resource "aws_lb_listener" "private_http" {
   protocol          = var.load_balancer_type == "application" ? "HTTP" : "TCP"
 
   default_action {
-    type = var.default_action_http
+    type             = var.default_action_http
+    target_group_arn = var.default_action_https == "forward" ? var.target_group_arn : null
 
     dynamic "redirect" {
       for_each = try([var.default_action_redirect.redirect_response], [])
@@ -34,30 +35,9 @@ resource "aws_lb_listener" "private_http" {
         status_code = redirect.value.status_code
       }
     }
-    dynamic "forward" {
-      for_each = try([var.default_action_forward.forward], [])
 
-      content {
-        dynamic "target_group" {
-          for_each = forward.value.target_groups
-
-          content {
-            arn    = target_group.value.arn
-            weight = try(target_group.value.weight, null)
-          }
-        }
-
-        dynamic "stickiness" {
-          for_each = try([forward.value.stickiness], [])
-
-          content {
-            duration = stickiness.value.duration
-            enabled  = try(stickiness.value.enabled, false)
-          }
-        }
-      }
-    }
   }
+
 
   lifecycle {
     create_before_destroy = true
@@ -73,7 +53,8 @@ resource "aws_lb_listener" "private_https" {
   certificate_arn   = var.certificate_arn
 
   default_action {
-    type = var.default_action_https
+    type             = var.default_action_https
+    target_group_arn = var.default_action_https == "forward" ? var.target_group_arn : null
 
     dynamic "fixed_response" {
       for_each = try([var.default_action_fixed_response.fixed_response], [])
@@ -84,29 +65,7 @@ resource "aws_lb_listener" "private_https" {
         status_code  = fixed_response.value.status_code
       }
     }
-    dynamic "forward" {
-      for_each = try([var.default_action_forward.forward], [])
 
-      content {
-        dynamic "target_group" {
-          for_each = forward.value.target_groups
-
-          content {
-            arn    = target_group.value.arn
-            weight = try(target_group.value.weight, null)
-          }
-        }
-
-        dynamic "stickiness" {
-          for_each = try([forward.value.stickiness], [])
-
-          content {
-            duration = stickiness.value.duration
-            enabled  = try(stickiness.value.enabled, false)
-          }
-        }
-      }
-    }
   }
 
   lifecycle {
