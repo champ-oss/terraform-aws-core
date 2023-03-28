@@ -106,7 +106,7 @@ variable "default_action_https" {
 
 variable "default_action_redirect" {
   type        = any
-  description = "(Required) Configuration block for default actions."
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
   default = {
     redirect_response = {
       port        = "443"
@@ -118,7 +118,7 @@ variable "default_action_redirect" {
 
 variable "default_action_fixed_response" {
   type        = any
-  description = "(Required) Configuration block for default actions."
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
   default = {
     fixed_response = {
       message_body = "No valid routing rule"
@@ -130,6 +130,6 @@ variable "default_action_fixed_response" {
 
 variable "default_action_forward" {
   type        = any
-  description = "(Required) Configuration block for default actions."
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#default_action"
   default     = null
 }
