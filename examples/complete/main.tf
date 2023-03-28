@@ -82,6 +82,7 @@ module "this" {
   load_balancer_type            = "network"
   default_action_http           = "forward"
   default_action_https          = "forward"
+  certificate_arn               = ""
   default_action_redirect       = null
   default_action_fixed_response = null
   default_action_forward = {
