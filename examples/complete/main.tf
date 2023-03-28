@@ -88,7 +88,7 @@ module "this" {
   default_action_https          = "forward"
   target_group_external_arn     = aws_lb_target_group.external.arn
   target_group_internal_arn     = aws_lb_target_group.internal.arn
-  certificate_arn               = module.acm.arn
+  certificate_arn               = ""
   default_action_redirect       = null
   default_action_fixed_response = null
   enable_container_insights     = true
