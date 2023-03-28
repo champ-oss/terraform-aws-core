@@ -49,7 +49,7 @@ data "aws_subnets" "public" {
   }
 }
 
-/*
+
 module "acm" {
   source            = "github.com/champ-oss/terraform-aws-acm.git?ref=v1.0.110-61ad6b7"
   git               = local.git
@@ -58,6 +58,8 @@ module "acm" {
   zone_id           = data.aws_route53_zone.this.zone_id
   enable_validation = true
 }
+
+/*
 
 module "this" {
   source                    = "../../"
@@ -86,7 +88,7 @@ module "this" {
   default_action_https          = "forward"
   target_group_external_arn     = aws_lb_target_group.external.arn
   target_group_internal_arn     = aws_lb_target_group.internal.arn
-  certificate_arn               = ""
+  certificate_arn               = module.acm.arn
   default_action_redirect       = null
   default_action_fixed_response = null
   enable_container_insights     = true
