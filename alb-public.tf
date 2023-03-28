@@ -26,7 +26,7 @@ resource "aws_lb_listener" "public_http" {
 
   default_action {
     type             = var.default_action_http
-    target_group_arn = var.default_action_https == "forward" ? var.target_group_arn : null
+    target_group_arn = var.default_action_http == "forward" ? var.target_group_arn : null
 
     dynamic "redirect" {
       for_each = try([var.default_action_redirect.redirect_response], [])
