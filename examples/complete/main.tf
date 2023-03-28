@@ -90,7 +90,7 @@ module "this" {
   default_action_forward = {
     forward = {
       target_groups = {
-        arn = aws_lb_target_group.this.name
+        arn = aws_lb_target_group.this.id
       }
     }
   }
