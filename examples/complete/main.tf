@@ -49,26 +49,28 @@ data "aws_subnets" "public" {
   }
 }
 
-# module "acm" {
-#  source            = "github.com/champ-oss/terraform-aws-acm.git?ref=v1.0.110-61ad6b7"
-#  git               = local.git
-#  domain_name       = "${local.git}.${data.aws_route53_zone.this.name}"
-#  create_wildcard   = false
-#  zone_id           = data.aws_route53_zone.this.zone_id
-#  enable_validation = true
-# }
+/*
+module "acm" {
+  source            = "github.com/champ-oss/terraform-aws-acm.git?ref=v1.0.110-61ad6b7"
+  git               = local.git
+  domain_name       = "${local.git}.${data.aws_route53_zone.this.name}"
+  create_wildcard   = false
+  zone_id           = data.aws_route53_zone.this.zone_id
+  enable_validation = true
+}
 
-# module "this" {
-#  source                    = "../../"
-#  name                      = local.git
-#  git                       = local.git
-#  public_subnet_ids         = data.aws_subnets.public.ids
-#  private_subnet_ids        = data.aws_subnets.private.ids
-#  vpc_id                    = data.aws_vpcs.this.ids[0]
-#  certificate_arn           = module.acm.arn
-#  protect                   = false
-#  enable_container_insights = true
-# }
+module "this" {
+  source                    = "../../"
+  name                      = local.git
+  git                       = local.git
+  public_subnet_ids         = data.aws_subnets.public.ids
+  private_subnet_ids        = data.aws_subnets.private.ids
+  vpc_id                    = data.aws_vpcs.this.ids[0]
+  certificate_arn           = module.acm.arn
+  protect                   = false
+  enable_container_insights = true
+}
+*/
 
 # testing nlb
 module "this" {
@@ -86,14 +88,13 @@ module "this" {
   default_action_redirect       = null
   default_action_fixed_response = null
   default_action_forward = {
-    target_group = aws_lb_target_group.this[0].arn
+    target_group = aws_lb_target_group.this.arn
   }
 
 }
 
 resource "aws_lb_target_group" "this" {
-  for_each    = var.ports
-  port        = each.value
+  port        = "443"
   protocol    = "TCP"
   vpc_id      = data.aws_vpcs.this.ids[0]
   target_type = "ip"
