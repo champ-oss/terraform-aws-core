@@ -89,7 +89,7 @@ module "this" {
   certificate_arn               = ""
   default_action_redirect       = null
   default_action_fixed_response = null
-
+  enable_container_insights     = true
 }
 
 resource "aws_lb_target_group" "internal" {

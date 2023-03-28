@@ -1,11 +1,11 @@
 resource "aws_lb" "private" {
-  depends_on      = [aws_s3_bucket.this, aws_s3_bucket_policy.this]
-  name_prefix     = "lb-pv-"
+  depends_on         = [aws_s3_bucket.this, aws_s3_bucket_policy.this]
+  name_prefix        = "lb-pv-"
   load_balancer_type = var.load_balancer_type
   security_groups    = var.load_balancer_type == "application" ? [aws_security_group.alb.id] : []
-  subnets         = var.private_subnet_ids
-  tags            = merge(local.tags, var.tags)
-  internal        = true
+  subnets            = var.private_subnet_ids
+  tags               = merge(local.tags, var.tags)
+  internal           = true
 
   access_logs {
     bucket  = aws_s3_bucket.this.bucket
