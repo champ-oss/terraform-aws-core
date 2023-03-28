@@ -89,7 +89,7 @@ module "this" {
   default_action_fixed_response = null
   default_action_forward = {
     forward = {
-      target_group = {
+      target_groups = {
         arn = aws_lb_target_group.this.arn
       }
     }
