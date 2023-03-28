@@ -84,14 +84,26 @@ module "this" {
   load_balancer_type            = "network"
   default_action_http           = "forward"
   default_action_https          = "forward"
-  target_group_arn              = aws_lb_target_group.this.arn
+  target_group_external_arn     = aws_lb_target_group.external.arn
+  target_group_internal_arn     = aws_lb_target_group.internal.arn
   certificate_arn               = ""
   default_action_redirect       = null
   default_action_fixed_response = null
 
 }
 
-resource "aws_lb_target_group" "this" {
+resource "aws_lb_target_group" "internal" {
+  port        = "443"
+  protocol    = "TCP"
+  vpc_id      = data.aws_vpcs.this.ids[0]
+  target_type = "ip"
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_lb_target_group" "external" {
   port        = "443"
   protocol    = "TCP"
   vpc_id      = data.aws_vpcs.this.ids[0]

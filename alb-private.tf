@@ -25,7 +25,7 @@ resource "aws_lb_listener" "private_http" {
 
   default_action {
     type             = var.default_action_http
-    target_group_arn = var.default_action_http == "forward" ? var.target_group_arn : null
+    target_group_arn = var.default_action_http == "forward" ? var.target_group_internal_arn : null
 
     dynamic "redirect" {
       for_each = try([var.default_action_redirect.redirect_response], [])
@@ -55,7 +55,7 @@ resource "aws_lb_listener" "private_https" {
 
   default_action {
     type             = var.default_action_https
-    target_group_arn = var.default_action_https == "forward" ? var.target_group_arn : null
+    target_group_arn = var.default_action_https == "forward" ? var.target_group_internal_arn : null
 
     dynamic "fixed_response" {
       for_each = try([var.default_action_fixed_response.fixed_response], [])
