@@ -88,7 +88,9 @@ module "this" {
   default_action_redirect       = null
   default_action_fixed_response = null
   default_action_forward = {
-    target_group = aws_lb_target_group.this.arn
+    target_group = {
+      arn = aws_lb_target_group.this.arn
+    }
   }
 
 }
