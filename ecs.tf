@@ -1,13 +1,17 @@
 resource "aws_ecs_cluster" "this" {
-  depends_on         = [time_sleep.wait_container_insight_logs]
-  name               = var.name
-  capacity_providers = ["FARGATE"]
-  tags               = var.tags
+  depends_on = [time_sleep.wait_container_insight_logs]
+  name       = var.name
+  tags       = var.tags
 
   setting {
     name  = "containerInsights"
     value = var.enable_container_insights ? "enabled" : "disabled"
   }
+}
+
+resource "aws_ecs_cluster_capacity_providers" "this" {
+  cluster_name       = aws_ecs_cluster.this.name
+  capacity_providers = ["FARGATE"]
 }
 
 # Wait before deleting the Container Insights log group since AWS still logs data even 2-3 minutes after the ECS cluster has been deleted. CLOUD-456
