@@ -25,6 +25,11 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
   }
 }
 
+resource "time_sleep" "wait_aws_s3_bucket_versioning" {
+  depends_on       = [aws_s3_bucket_versioning.this]
+  destroy_duration = "60s"
+}
+
 resource "aws_s3_bucket_versioning" "this" {
   depends_on = [aws_s3_bucket_public_access_block.this]
   bucket     = aws_s3_bucket.this.id
