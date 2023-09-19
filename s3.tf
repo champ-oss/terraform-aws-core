@@ -1,3 +1,8 @@
+resource "time_sleep" "wait_aws_s3_bucket" {
+  depends_on       = [aws_s3_bucket.this]
+  destroy_duration = "60s"
+}
+
 resource "aws_s3_bucket" "this" {
   bucket_prefix = "aws-lb-"
   force_destroy = !var.protect
