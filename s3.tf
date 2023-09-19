@@ -1,8 +1,3 @@
-resource "time_sleep" "wait_aws_s3_bucket" {
-  depends_on       = [aws_s3_bucket.this]
-  destroy_duration = "60s"
-}
-
 resource "aws_s3_bucket" "this" {
   bucket_prefix = "aws-lb-"
   force_destroy = !var.protect
@@ -30,14 +25,8 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "this" {
   }
 }
 
-resource "time_sleep" "wait_aws_s3_bucket_versioning" {
-  depends_on       = [aws_s3_bucket_versioning.this]
-  destroy_duration = "60s"
-}
-
 resource "aws_s3_bucket_versioning" "this" {
-  depends_on = [aws_s3_bucket_public_access_block.this]
-  bucket     = aws_s3_bucket.this.id
+  bucket = aws_s3_bucket.this.id
   versioning_configuration {
     status = "Enabled"
   }
@@ -105,7 +94,6 @@ data "aws_iam_policy_document" "s3" {
 }
 
 resource "aws_s3_bucket_public_access_block" "this" {
-  depends_on              = [aws_s3_bucket_policy.this]
   bucket                  = aws_s3_bucket.this.id
   block_public_acls       = true
   block_public_policy     = true
