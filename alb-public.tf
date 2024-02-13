@@ -11,6 +11,12 @@ resource "aws_lb" "public" {
     enabled = true
   }
 
+  connection_logs {
+    bucket  = aws_s3_bucket.this.bucket
+    enabled = var.enable_connection_logs
+    prefix  = var.connection_logs_prefix
+  }
+
   lifecycle {
     create_before_destroy = true
   }
