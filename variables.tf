@@ -85,3 +85,15 @@ variable "athena_workgroup" {
   type        = string
   default     = "primary"
 }
+
+variable "enable_connection_logs" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#connection_logs"
+  type        = bool
+  default     = true
+}
+
+variable "connection_logs_prefix" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#connection_logs"
+  type        = string
+  default     = null
+}
