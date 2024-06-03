@@ -57,3 +57,13 @@ output "lb_private_zone_id" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#zone_id"
   value       = aws_lb.private.zone_id
 }
+
+output "lb_private_arn_suffix" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#arn_suffix"
+  value = aws_lb.private.arn_suffix
+}
+
+output "lb_public_arn_suffix" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#arn_suffix"
+  value = aws_lb.public.arn_suffix
+}
