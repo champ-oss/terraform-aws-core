@@ -52,12 +52,19 @@ data "aws_subnets" "public" {
 }
 
 module "acm" {
+  count             = var.enabled ? 1 : 0
   source            = "github.com/champ-oss/terraform-aws-acm.git?ref=v1.0.116-cd36b2b"
   git               = local.git
   domain_name       = "${local.git}.${data.aws_route53_zone.this.name}"
   create_wildcard   = false
   zone_id           = data.aws_route53_zone.this.zone_id
   enable_validation = true
+}
+
+variable "enabled" {
+  description = "module enabled"
+  type        = bool
+  default     = false
 }
 
 module "this" {
@@ -67,13 +74,15 @@ module "this" {
   public_subnet_ids         = data.aws_subnets.public.ids
   private_subnet_ids        = data.aws_subnets.private.ids
   vpc_id                    = data.aws_vpcs.this.ids[0]
-  certificate_arn           = module.acm.arn
+  certificate_arn           = module.acm[0].arn
   protect                   = false
   enable_container_insights = true
+  enabled                   = var.enabled
 }
 
 # Create a simple ECS service to test Container Insights logging
 resource "aws_ecs_task_definition" "this" {
+  count  = var.enabled ? 1 : 0
   family = local.git
   container_definitions = jsonencode([
     {
@@ -92,9 +101,10 @@ resource "aws_ecs_task_definition" "this" {
 }
 
 resource "aws_ecs_service" "this" {
+  count                 = var.enabled ? 1 : 0
   name                  = local.git
   cluster               = module.this.ecs_cluster_name
-  task_definition       = aws_ecs_task_definition.this.arn
+  task_definition       = aws_ecs_task_definition.this[0].arn
   desired_count         = 1
   launch_type           = "FARGATE"
   propagate_tags        = "SERVICE"
