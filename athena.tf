@@ -1,15 +1,17 @@
 resource "aws_athena_database" "this" {
-  name          = replace(aws_s3_bucket.this.bucket, "-", "_")
-  bucket        = aws_s3_bucket.this.bucket
+  count         = var.enabled ? 1 : 0
+  name          = replace(aws_s3_bucket.this[0].bucket, "-", "_")
+  bucket        = aws_s3_bucket.this[0].bucket
   force_destroy = !var.protect
   comment       = var.git
 }
 
 resource "aws_athena_named_query" "this" {
-  name        = replace(aws_s3_bucket.this.bucket, "-", "_")
+  count       = var.enabled ? 1 : 0
+  name        = replace(aws_s3_bucket.this[0].bucket, "-", "_")
   description = var.git
   workgroup   = var.athena_workgroup
-  database    = aws_athena_database.this.name
+  database    = aws_athena_database.this[0].name
   query       = <<EOT
 CREATE EXTERNAL TABLE IF NOT EXISTS alb_logs (
             type string,
@@ -55,7 +57,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS alb_logs (
             'serialization.format' = '1',
             'input.regex' =
         '([^ ]*) ([^ ]*) ([^ ]*) ([^ ]*):([0-9]*) ([^ ]*)[:-]([0-9]*) ([-.0-9]*) ([-.0-9]*) ([-.0-9]*) (|[-0-9]*) (-|[-0-9]*) ([-0-9]*) ([-0-9]*) \"([^ ]*) (.*) (- |[^ ]*)\" \"([^\"]*)\" ([A-Z0-9-_]+) ([A-Za-z0-9.-]*) ([^ ]*) \"([^\"]*)\" \"([^\"]*)\" \"([^\"]*)\" ([-.0-9]*) ([^ ]*) \"([^\"]*)\" \"([^\"]*)\" \"([^ ]*)\" \"([^\s]+?)\" \"([^\s]+)\" \"([^ ]*)\" \"([^ ]*)\"')
-            LOCATION 's3://${aws_s3_bucket.this.bucket}/AWSLogs/${data.aws_caller_identity.this.account_id}/elasticloadbalancing/${data.aws_region.this.name}/'
+            LOCATION 's3://${aws_s3_bucket.this[0].bucket}/AWSLogs/${data.aws_caller_identity.this[0].account_id}/elasticloadbalancing/${data.aws_region.this[0].name}/'
             TBLPROPERTIES
             (
              "projection.enabled" = "true",
@@ -64,7 +66,7 @@ CREATE EXTERNAL TABLE IF NOT EXISTS alb_logs (
              "projection.day.format" = "yyyy/MM/dd",
              "projection.day.interval" = "1",
              "projection.day.interval.unit" = "DAYS",
-             "storage.location.template" = "s3://${aws_s3_bucket.this.bucket}/AWSLogs/${data.aws_caller_identity.this.account_id}/elasticloadbalancing/${data.aws_region.this.name}/$${day}"
+             "storage.location.template" = "s3://${aws_s3_bucket.this[0].bucket}/AWSLogs/${data.aws_caller_identity.this[0].account_id}/elasticloadbalancing/${data.aws_region.this[0].name}/$${day}"
             )
 EOT
 }

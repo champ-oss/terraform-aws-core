@@ -1,18 +1,19 @@
 resource "aws_lb" "public" {
+  count           = var.enabled ? 1 : 0
   depends_on      = [aws_s3_bucket.this, aws_s3_bucket_policy.this]
   name_prefix     = "lb-pb-"
-  security_groups = [aws_security_group.alb.id]
+  security_groups = [aws_security_group.alb[0].id]
   subnets         = var.public_subnet_ids
   tags            = merge(local.tags, var.tags)
   internal        = false
 
   access_logs {
-    bucket  = aws_s3_bucket.this.bucket
+    bucket  = aws_s3_bucket.this[0].bucket
     enabled = true
   }
 
   connection_logs {
-    bucket  = aws_s3_bucket.this.bucket
+    bucket  = aws_s3_bucket.this[0].bucket
     enabled = var.enable_connection_logs
     prefix  = var.connection_logs_prefix
   }
@@ -23,7 +24,8 @@ resource "aws_lb" "public" {
 }
 
 resource "aws_lb_listener" "public_http" {
-  load_balancer_arn = aws_lb.public.arn
+  count             = var.enabled ? 1 : 0
+  load_balancer_arn = aws_lb.public[0].arn
   depends_on        = [aws_lb.public] # https://github.com/terraform-providers/terraform-provider-aws/issues/9976
   port              = "80"
   protocol          = "HTTP"
@@ -44,7 +46,8 @@ resource "aws_lb_listener" "public_http" {
 }
 
 resource "aws_lb_listener" "public_https" {
-  load_balancer_arn = aws_lb.public.arn
+  count             = var.enabled ? 1 : 0
+  load_balancer_arn = aws_lb.public[0].arn
   depends_on        = [aws_lb.public] # https://github.com/terraform-providers/terraform-provider-aws/issues/9976
   port              = "443"
   protocol          = "HTTPS"
@@ -67,7 +70,7 @@ resource "aws_lb_listener" "public_https" {
 }
 
 resource "aws_lb_listener_certificate" "this" {
-  count           = length(var.additional_certificate_arns)
-  listener_arn    = aws_lb_listener.public_https.arn
+  count           = var.enabled && length(var.additional_certificate_arns) > 0 ? length(var.additional_certificate_arns) : 0
+  listener_arn    = aws_lb_listener.public_https[0].arn
   certificate_arn = var.additional_certificate_arns[count.index]
 }
