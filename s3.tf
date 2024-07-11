@@ -10,6 +10,7 @@ resource "aws_s3_bucket" "this" {
 }
 
 resource "aws_s3_bucket_ownership_controls" "this" {
+  count  = var.enabled ? 1 : 0
   bucket = aws_s3_bucket.this[0].id
 
   rule {
