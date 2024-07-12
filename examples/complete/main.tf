@@ -65,7 +65,7 @@ module "acm" {
 variable "enabled" {
   description = "module enabled"
   type        = bool
-  default     = false
+  default     = true
 }
 
 module "this" {
