@@ -26,6 +26,8 @@ data "aws_iam_policy_document" "ssm_policy" {
   count = var.enabled ? 1 : 0
   statement {
     actions = [
+      "secretsmanager:GetSecretValue",
+      "kms:Decrypt",
       "ssmmessages:CreateControlChannel",
       "ssmmessages:CreateDataChannel",
       "ssmmessages:OpenControlChannel",
