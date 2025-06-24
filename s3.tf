@@ -6,6 +6,7 @@ resource "aws_s3_bucket" "this" {
 
   lifecycle {
     create_before_destroy = true
+    ignore_changes = [lifecycle_rule]
   }
 }
 
