@@ -6,7 +6,6 @@ resource "aws_s3_bucket" "this" {
 
   lifecycle {
     create_before_destroy = true
-    ignore_changes = [lifecycle_rule]
   }
 }
 
@@ -38,7 +37,7 @@ resource "aws_s3_bucket_versioning" "this" {
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "this" {
-  count  = var.enabled ? 1 : 0
+  count  = var.enabled && var.enable_lifecycle_configuration ? 1 : 0
   bucket = aws_s3_bucket.this[0].id
   rule {
     id     = "expiration"

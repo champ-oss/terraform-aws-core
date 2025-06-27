@@ -103,3 +103,9 @@ variable "enabled" {
   type        = bool
   default     = true
 }
+
+variable "enable_lifecycle_configuration" {
+  description = "Set to false to prevent the module from creating lifecycle configuration for S3 bucket"
+  type        = bool
+  default     = false
+}
