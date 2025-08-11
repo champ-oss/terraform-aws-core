@@ -1,7 +1,7 @@
 resource "aws_iam_role" "this" {
   count              = var.enabled ? 1 : 0
   name_prefix        = var.git
-  assume_role_policy = data.aws_iam_policy_document.this[0].json
+  assume_role_policy = try(data.aws_iam_policy_document.this[0].json , "{}")
   tags               = local.tags
 
   lifecycle {
@@ -40,7 +40,7 @@ data "aws_iam_policy_document" "ssm_policy" {
 resource "aws_iam_policy" "ssm_policy" {
   count       = var.enabled ? 1 : 0
   name_prefix = "${var.git}-ssm-policy"
-  policy      = data.aws_iam_policy_document.ssm_policy[0].json
+  policy      = try(data.aws_iam_policy_document.ssm_policy[0].json, "{}")
 }
 
 resource "aws_iam_role_policy_attachment" "ssm_policy" {
