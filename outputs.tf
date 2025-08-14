@@ -5,7 +5,7 @@ output "ecs_cluster_name" {
 
 output "ecs_app_security_group" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group#id"
-  value       = var.enabled && !var.paused ? aws_security_group.app[0].id : ""
+  value       = var.enabled ? aws_security_group.app[0].id : ""
 }
 
 output "execution_ecs_role_arn" {

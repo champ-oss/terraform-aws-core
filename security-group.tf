@@ -43,7 +43,7 @@ resource "aws_security_group_rule" "alb_ingress_https" {
 }
 
 resource "aws_security_group" "app" {
-  count       = var.enabled && !var.paused ? 1 : 0
+  count       = var.enabled ? 1 : 0
   name_prefix = "${var.name}-app-"
   vpc_id      = var.vpc_id
   tags        = var.tags
