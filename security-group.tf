@@ -1,5 +1,5 @@
 resource "aws_security_group" "alb" {
-  count       = var.enabled && !var.paused ? 1 : 0
+  count       = var.enabled ? 1 : 0
   name_prefix = "${var.name}-alb-"
   vpc_id      = var.vpc_id
   tags        = var.tags
