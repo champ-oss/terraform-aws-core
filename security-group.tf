@@ -10,7 +10,7 @@ resource "aws_security_group" "alb" {
 }
 
 resource "aws_security_group_rule" "alb_egress_ecs" {
-  count                    = length(aws_security_group.alb) > 0 ? 1 : 0
+  count                    = var.enabled ? 1 : 0
   description              = "ecs"
   type                     = "egress"
   from_port                = 0
@@ -21,7 +21,7 @@ resource "aws_security_group_rule" "alb_egress_ecs" {
 }
 
 resource "aws_security_group_rule" "alb_ingress_http" {
-  count             = length(aws_security_group.alb) > 0 ? 1 : 0
+  count             = var.enabled ? 1 : 0
   description       = "http"
   type              = "ingress"
   from_port         = 80
@@ -32,7 +32,7 @@ resource "aws_security_group_rule" "alb_ingress_http" {
 }
 
 resource "aws_security_group_rule" "alb_ingress_https" {
-  count             = length(aws_security_group.alb) > 0 ? 1 : 0
+  count             = var.enabled ? 1 : 0
   description       = "https"
   type              = "ingress"
   from_port         = 443
@@ -54,7 +54,7 @@ resource "aws_security_group" "app" {
 }
 
 resource "aws_security_group_rule" "app_egress_internet" {
-  count             = length(aws_security_group.app) > 0 ? 1 : 0
+  count             = var.enabled ? 1 : 0
   description       = "internet"
   type              = "egress"
   from_port         = 0
@@ -65,7 +65,7 @@ resource "aws_security_group_rule" "app_egress_internet" {
 }
 
 resource "aws_security_group_rule" "app_ingress_alb" {
-  count                    = length(aws_security_group.app) > 0 ? 1 : 0
+  count                    = var.enabled ? 1 : 0
   description              = "alb"
   type                     = "ingress"
   from_port                = 0
@@ -76,7 +76,7 @@ resource "aws_security_group_rule" "app_ingress_alb" {
 }
 
 resource "aws_security_group_rule" "app_self_rule" {
-  count             = length(aws_security_group.app) > 0 ? 1 : 0
+  count             = var.enabled ? 1 : 0
   type              = "ingress"
   from_port         = 0
   to_port           = 65535
