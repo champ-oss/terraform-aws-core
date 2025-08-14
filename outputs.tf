@@ -10,12 +10,12 @@ output "ecs_app_security_group" {
 
 output "execution_ecs_role_arn" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role#arn"
-  value       = var.enabled && !var.paused ? aws_iam_role.this[0].arn : ""
+  value       = var.enabled ? aws_iam_role.this[0].arn : ""
 }
 
 output "execution_ecs_role_name" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role#name"
-  value       = var.enabled && !var.paused ? aws_iam_role.this[0].name : ""
+  value       = var.enabled ? aws_iam_role.this[0].name : ""
 }
 
 output "lb_private_arn" {
