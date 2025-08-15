@@ -109,3 +109,9 @@ variable "enable_lifecycle_configuration" {
   type        = bool
   default     = false
 }
+
+variable "paused" {
+  description = "Set to true to pause the resource"
+  type        = bool
+  default     = false
+}
