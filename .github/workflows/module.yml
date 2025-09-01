@@ -36,7 +36,7 @@ jobs:
       id-token: write
       contents: read
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - id: set-matrix
         working-directory: examples
         run: |
@@ -60,7 +60,7 @@ jobs:
         shell: bash
         working-directory: examples/${{ matrix.EXAMPLES }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - uses: aws-actions/configure-aws-credentials@v4
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_TO_ASSUME }}
@@ -109,7 +109,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@v5
       - name: set-env-info
         run: |
           echo "GIT_REPO=$(echo ${GITHUB_REPOSITORY} | sed -e 's|.*/||')" >> $GITHUB_ENV
