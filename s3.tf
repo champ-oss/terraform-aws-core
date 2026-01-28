@@ -160,5 +160,5 @@ data "aws_iam_policy_document" "log_delivery_policy" {
 resource "aws_s3_bucket_policy" "log_delivery_bucket_policy" {
   count  = var.enabled ? 1 : 0
   bucket = aws_s3_bucket.aws_lb_server_access_log_bucket[0].id
-  policy = data.aws_iam_policy_document.log_delivery_policy.json
+  policy = data.aws_iam_policy_document.log_delivery_policy[0].json
 }
