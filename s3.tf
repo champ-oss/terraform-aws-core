@@ -111,7 +111,7 @@ resource "aws_s3_bucket_public_access_block" "this" {
   ignore_public_acls      = true
 }
 
-#Enable Server Access Logging
+##Enable Server Access Logging
 #Create target bucket for access logs
 resource "aws_s3_bucket" "aws_lb_server_access_log_bucket" {
   count  = var.enabled ? 1 : 0
