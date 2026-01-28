@@ -111,9 +111,10 @@ resource "aws_s3_bucket_public_access_block" "this" {
   ignore_public_acls      = true
 }
 
-#Enable Server Access Logging
+##Enable Server Access Logging
 #Create target bucket for access logs
 resource "aws_s3_bucket" "aws_lb_server_access_log_bucket" {
+  count  = var.enabled ? 1 : 0
   bucket_prefix = "aws-lb-access-logs-"
 
   lifecycle {
@@ -126,20 +127,22 @@ resource "aws_s3_bucket" "aws_lb_server_access_log_bucket" {
 
 #Enable logging
 resource "aws_s3_bucket_logging" "aws_lb_bucket_logging" {
+  count  = var.enabled ? 1 : 0
   bucket = aws_s3_bucket.this[0].id
-  target_bucket = aws_s3_bucket.aws_lb_server_access_log_bucket.id
+  target_bucket = aws_s3_bucket.aws_lb_server_access_log_bucket[0].id
   target_prefix = "aws-lb-bucket-logs/"
 }
 
 #IAM policy to allow logging service to write logs to S3 bucket
 data "aws_iam_policy_document" "log_delivery_policy" {
+  count  = var.enabled ? 1 : 0
   statement {
     actions = [
       "s3:PutObject",
       "s3:PutObjectAcl"
     ]
     resources = [
-      "${aws_s3_bucket.aws_lb_server_access_log_bucket.arn}/*"
+      "${aws_s3_bucket.aws_lb_server_access_log_bucket[0].arn}/*"
     ]
     principals {
       type = "Service"
@@ -148,13 +151,14 @@ data "aws_iam_policy_document" "log_delivery_policy" {
     condition {
       test = "StringEquals"
       variable = "aws:SourceArn"
-      values = [aws_s3_bucket.aws_lb_server_access_log_bucket.arn]
+      values = [aws_s3_bucket.aws_lb_server_access_log_bucket[0].arn]
     }
   }
 }
 
 #Associate the policy with target bucket
 resource "aws_s3_bucket_policy" "log_delivery_bucket_policy" {
-  bucket = aws_s3_bucket.aws_lb_server_access_log_bucket.id
-  policy = data.aws_iam_policy_document.log_delivery_policy.json
+  count  = var.enabled ? 1 : 0
+  bucket = aws_s3_bucket.aws_lb_server_access_log_bucket[0].id
+  policy = data.aws_iam_policy_document.log_delivery_policy[0].json
 }
