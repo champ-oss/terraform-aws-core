@@ -10,14 +10,14 @@ jobs:
   lint:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
       - uses: hashicorp/setup-terraform@v3 # https://github.com/hashicorp/setup-terraform/releases
         with:
           terraform_version: 1.10.5 # https://github.com/hashicorp/terraform/releases
           terraform_wrapper: false
       - run: terraform fmt -recursive -check -diff
         continue-on-error: true
-      - uses: terraform-linters/setup-tflint@v4 #https://github.com/terraform-linters/setup-tflint/releases
+      - uses: terraform-linters/setup-tflint@v6 #https://github.com/terraform-linters/setup-tflint/releases
         with:
           tflint_version: v0.50.3 # https://github.com/terraform-linters/tflint/releases
       - run: tflint --init
