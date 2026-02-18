@@ -1,6 +1,6 @@
 resource "aws_lb" "private" {
   count           = var.enabled && !var.paused ? 1 : 0
-  depends_on      = [aws_s3_bucket.this, aws_s3_bucket_policy.this]
+  depends_on      = [var.central_audit_bucket]
   name_prefix     = "lb-pv-"
   security_groups = [aws_security_group.alb[0].id]
   subnets         = var.private_subnet_ids
@@ -8,13 +8,14 @@ resource "aws_lb" "private" {
   internal        = true
 
   access_logs {
-    bucket  = aws_s3_bucket.this[0].bucket
-    enabled = true
+    enabled  = var.central_audit_bucket != null
+    bucket   = var.central_audit_bucket
+    prefix   = "aws-lb-pv-logs/"
   }
 
   connection_logs {
-    bucket  = aws_s3_bucket.this[0].bucket
-    enabled = var.enable_connection_logs
+    enabled = var.enable_connection_logs != null
+    bucket  = var.central_audit_bucket
     prefix  = var.connection_logs_prefix
   }
 
