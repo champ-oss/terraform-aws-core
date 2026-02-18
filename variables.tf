@@ -115,3 +115,9 @@ variable "paused" {
   type        = bool
   default     = false
 }
+
+variable "central_audit_bucket" {
+  description = "Name of central audit bucket. If null, module will create and use local-audit-bucket."
+  type        = string
+  default     = null
+}

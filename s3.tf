@@ -112,24 +112,29 @@ resource "aws_s3_bucket_public_access_block" "this" {
 }
 
 ##Enable Server Access Logging
-#Create target bucket for access logs
-resource "aws_s3_bucket" "aws_lb_server_access_log_bucket" {
+#Create local target bucket for access logs if central bucket is not null
+resource "aws_s3_bucket" "aws_lb_server_access_log_local_bucket" {
   count  = var.enabled ? 1 : 0
-  bucket_prefix = "aws-lb-access-logs-"
+  bucket_prefix = "aws-lb-access-logs-local-"
 
   lifecycle {
-    prevent_destroy = true
+    create_before_destroy = true
   }
   versioning {
     enabled = true
   }
 }
 
+#Choose which buket to use
+locals {
+  log_bucket_name = var.central_audit_bucket == null ? aws_s3_bucket.aws_lb_server_access_log_local_bucket[0].id : var.central_audit_bucket
+}
+
 #Enable logging
 resource "aws_s3_bucket_logging" "aws_lb_bucket_logging" {
   count  = var.enabled ? 1 : 0
   bucket = aws_s3_bucket.this[0].id
-  target_bucket = aws_s3_bucket.aws_lb_server_access_log_bucket[0].id
+  target_bucket = local.log_bucket_name
   target_prefix = "aws-lb-bucket-logs/"
 }
 
@@ -142,7 +147,7 @@ data "aws_iam_policy_document" "log_delivery_policy" {
       "s3:PutObjectAcl"
     ]
     resources = [
-      "${aws_s3_bucket.aws_lb_server_access_log_bucket[0].arn}/*"
+      "${aws_s3_bucket.aws_lb_server_access_log_local_bucket[0].arn}/*"
     ]
     principals {
       type = "Service"
@@ -151,7 +156,7 @@ data "aws_iam_policy_document" "log_delivery_policy" {
     condition {
       test = "StringEquals"
       variable = "aws:SourceArn"
-      values = [aws_s3_bucket.aws_lb_server_access_log_bucket[0].arn]
+      values = [aws_s3_bucket.aws_lb_server_access_log_local_bucket[0].arn]
     }
   }
 }
@@ -159,6 +164,6 @@ data "aws_iam_policy_document" "log_delivery_policy" {
 #Associate the policy with target bucket
 resource "aws_s3_bucket_policy" "log_delivery_bucket_policy" {
   count  = var.enabled ? 1 : 0
-  bucket = aws_s3_bucket.aws_lb_server_access_log_bucket[0].id
+  bucket = aws_s3_bucket.aws_lb_server_access_log_local_bucket[0].id
   policy = data.aws_iam_policy_document.log_delivery_policy[0].json
 }
