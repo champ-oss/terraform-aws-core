@@ -92,6 +92,7 @@ jobs:
             echo $key=$value
             export $key=$value
           done
+          sleep 300
           if [ -f test.sh ]; then bash test.sh; fi
       - name: destroy
         if: always()
