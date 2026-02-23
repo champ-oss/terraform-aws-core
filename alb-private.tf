@@ -5,7 +5,6 @@ resource "aws_lb" "private" {
   subnets                     = var.private_subnet_ids
   tags                        = merge(local.tags, var.tags)
   internal                    = true
-  
 
   dynamic "access_logs" {
   for_each = var.central_audit_bucket != null ? [1] : []

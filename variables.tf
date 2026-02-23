@@ -92,12 +92,6 @@ variable "paused" {
   default     = false
 }
 
-variable "protect" {
-  description = "Enables deletion protection on eligible resources"
-  type        = bool
-  default     = true
-}
-
 variable "central_audit_bucket" {
   description = "S3 bucket for centralizing ALB access logs and connection logs."
   type        = string
