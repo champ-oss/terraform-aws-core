@@ -50,12 +50,6 @@ variable "vpc_id" {
   type        = string
 }
 
-variable "protect" {
-  description = "Enables deletion protection on eligible resources"
-  type        = bool
-  default     = true
-}
-
 variable "ssl_policy" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb_listener#ssl_policy"
   type        = string
@@ -80,18 +74,6 @@ variable "enable_container_insights" {
   default     = false
 }
 
-variable "athena_workgroup" {
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/athena_named_query#workgroup"
-  type        = string
-  default     = "primary"
-}
-
-variable "enable_connection_logs" {
-  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#connection_logs"
-  type        = bool
-  default     = true
-}
-
 variable "connection_logs_prefix" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#connection_logs"
   type        = string
@@ -104,14 +86,14 @@ variable "enabled" {
   default     = true
 }
 
-variable "enable_lifecycle_configuration" {
-  description = "Set to false to prevent the module from creating lifecycle configuration for S3 bucket"
-  type        = bool
-  default     = false
-}
-
 variable "paused" {
   description = "Set to true to pause the resource"
   type        = bool
   default     = false
+}
+
+variable "central_audit_bucket" {
+  description = "S3 bucket for centralizing ALB access logs and connection logs."
+  type        = string
+  default     = null
 }

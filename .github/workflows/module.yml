@@ -91,7 +91,7 @@ jobs:
             value=$(echo $row | jq -r '.value.value' | tr -d '\n[]" ')
             echo $key=$value
             export $key=$value
-          done
+          done          
           if [ -f test.sh ]; then bash test.sh; fi
       - name: destroy
         if: always()

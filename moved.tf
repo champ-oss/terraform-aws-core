@@ -39,16 +39,6 @@ moved {
 }
 
 moved {
-  from = aws_athena_database.this
-  to   = aws_athena_database.this[0]
-}
-
-moved {
-  from = aws_athena_named_query.this
-  to   = aws_athena_named_query.this[0]
-}
-
-moved {
   from = aws_ecs_cluster.this
   to   = aws_ecs_cluster.this[0]
 }
@@ -129,36 +119,6 @@ moved {
 }
 
 moved {
-  from = aws_s3_bucket.this
-  to   = aws_s3_bucket.this[0]
-}
-
-moved {
-  from = aws_s3_bucket_ownership_controls.this
-  to   = aws_s3_bucket_ownership_controls.this[0]
-}
-
-moved {
-  from = aws_s3_bucket_server_side_encryption_configuration.this
-  to   = aws_s3_bucket_server_side_encryption_configuration.this[0]
-}
-
-moved {
-  from = aws_s3_bucket_versioning.this
-  to   = aws_s3_bucket_versioning.this[0]
-}
-
-moved {
-  from = aws_s3_bucket_lifecycle_configuration.this
-  to   = aws_s3_bucket_lifecycle_configuration.this[0]
-}
-
-moved {
-  from = aws_s3_bucket_policy.this
-  to   = aws_s3_bucket_policy.this[0]
-}
-
-moved {
   from = data.aws_elb_service_account.this
   to   = data.aws_elb_service_account.this[0]
 }
@@ -166,10 +126,6 @@ moved {
 moved {
   from = data.aws_iam_policy_document.s3
   to   = data.aws_iam_policy_document.s3[0]
-}
-moved {
-  from = aws_s3_bucket_public_access_block.this
-  to   = aws_s3_bucket_public_access_block.this[0]
 }
 
 moved {

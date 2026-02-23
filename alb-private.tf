@@ -1,22 +1,29 @@
 resource "aws_lb" "private" {
-  count           = var.enabled && !var.paused ? 1 : 0
-  depends_on      = [aws_s3_bucket.this, aws_s3_bucket_policy.this]
-  name_prefix     = "lb-pv-"
-  security_groups = [aws_security_group.alb[0].id]
-  subnets         = var.private_subnet_ids
-  tags            = merge(local.tags, var.tags)
-  internal        = true
+  count                       = var.enabled && !var.paused ? 1 : 0
+  name_prefix                 = "lb-pv-"
+  security_groups             = [aws_security_group.alb[0].id]
+  subnets                     = var.private_subnet_ids
+  tags                        = merge(local.tags, var.tags)
+  internal                    = true
 
-  access_logs {
-    bucket  = aws_s3_bucket.this[0].bucket
+  dynamic "access_logs" {
+  for_each = var.central_audit_bucket != null ? [1] : []
+
+  content {
     enabled = true
+    bucket  = var.central_audit_bucket
   }
+}
 
-  connection_logs {
-    bucket  = aws_s3_bucket.this[0].bucket
-    enabled = var.enable_connection_logs
+  dynamic "connection_logs" {
+  for_each = var.central_audit_bucket != null ? [1] : []
+
+  content {
+    enabled = true
+    bucket  = var.central_audit_bucket
     prefix  = var.connection_logs_prefix
   }
+}
 
   lifecycle {
     create_before_destroy = true

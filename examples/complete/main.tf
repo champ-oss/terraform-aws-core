@@ -76,7 +76,6 @@ module "this" {
   private_subnet_ids        = data.aws_subnets.private.ids
   vpc_id                    = data.aws_vpcs.this.ids[0]
   certificate_arn           = try(module.acm[0].arn, "")
-  protect                   = false
   enable_container_insights = false
   enabled                   = var.enabled
 }
