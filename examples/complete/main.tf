@@ -69,15 +69,16 @@ variable "enabled" {
 }
 
 module "this" {
-  source                    = "../../"
-  name                      = local.git
-  git                       = local.git
-  public_subnet_ids         = data.aws_subnets.public.ids
-  private_subnet_ids        = data.aws_subnets.private.ids
-  vpc_id                    = data.aws_vpcs.this.ids[0]
-  certificate_arn           = try(module.acm[0].arn, "")
-  enable_container_insights = false
-  enabled                   = var.enabled
+  source                      = "../../"
+  name                        = local.git
+  git                         = local.git
+  public_subnet_ids           = data.aws_subnets.public.ids
+  private_subnet_ids          = data.aws_subnets.private.ids
+  vpc_id                      = data.aws_vpcs.this.ids[0]
+  certificate_arn             = try(module.acm[0].arn, "")
+  enable_container_insights   = false
+  enable_deletion_protection  = false
+  enabled                     = var.enabled
 }
 
 # Create a simple ECS service to test Container Insights logging

@@ -97,3 +97,9 @@ variable "central_audit_bucket" {
   type        = string
   default     = null
 }
+
+variable "enable_deletion_protection" {
+  description = "Enables deletion protection on eligible resources"
+  type        = bool
+  default     = true
+}
