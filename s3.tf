@@ -20,7 +20,15 @@ removed {
   lifecycle {
     destroy = false
   }     
-} 
+}
+
+removed {
+  from = aws_s3_bucket_policy.this
+
+  lifecycle {
+    destroy = false
+  }
+}
 
 removed {
   from = aws_s3_bucket_public_access_block.this
