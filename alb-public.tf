@@ -1,7 +1,10 @@
 resource "aws_lb" "public" {
   count                      = var.enabled && !var.paused ? 1 : 0
   name_prefix                = "lb-pb-"
-  security_groups            = compact([aws_security_group.alb[0].id, var.enable_extra_alb_public_sg ? aws_security_group.alb_public_extra[0].id : null])
+  security_groups = concat(
+    [aws_security_group.alb[0].id],
+      var.enable_extra_alb_public_sg ? [try(aws_security_group.alb_public_extra[0].id, null)] : []
+  )
   subnets                    = var.public_subnet_ids
   tags                       = merge(local.tags, var.tags)
   internal                   = false
