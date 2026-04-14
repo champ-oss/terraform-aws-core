@@ -8,6 +8,11 @@ output "ecs_app_security_group" {
   value       = var.enabled ? aws_security_group.app[0].id : ""
 }
 
+output "alb_security_group" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/security_group#id"
+  value       = var.enabled ? aws_security_group.alb[0].id : ""
+}
+
 output "execution_ecs_role_arn" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role#arn"
   value       = var.enabled ? aws_iam_role.this[0].arn : ""
