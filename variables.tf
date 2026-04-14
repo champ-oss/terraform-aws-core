@@ -103,3 +103,9 @@ variable "enable_deletion_protection" {
   type        = bool
   default     = true
 }
+
+variable "enable_extra_alb_public_sg" {
+  description = "Enables creation of a security group for the public alb"
+  type        = bool
+  default     = false
+}

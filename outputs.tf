@@ -45,25 +45,25 @@ output "lb_public_dns_name" {
 
 output "lb_private_dns_name" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#dns_name"
-  value       = var.enabled && !var.paused  ? aws_lb.private[0].dns_name : ""
+  value       = var.enabled && !var.paused ? aws_lb.private[0].dns_name : ""
 }
 
 output "lb_public_zone_id" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#zone_id"
-  value       = var.enabled && !var.paused  ? aws_lb.public[0].zone_id : ""
+  value       = var.enabled && !var.paused ? aws_lb.public[0].zone_id : ""
 }
 
 output "lb_private_zone_id" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#zone_id"
-  value       = var.enabled && !var.paused  ? aws_lb.private[0].zone_id : ""
+  value       = var.enabled && !var.paused ? aws_lb.private[0].zone_id : ""
 }
 
 output "lb_private_arn_suffix" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#arn_suffix"
-  value       = var.enabled && !var.paused  ? aws_lb.private[0].arn_suffix : ""
+  value       = var.enabled && !var.paused ? aws_lb.private[0].arn_suffix : ""
 }
 
 output "lb_public_arn_suffix" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#arn_suffix"
-  value       = var.enabled && !var.paused  ? aws_lb.public[0].arn_suffix : ""
+  value       = var.enabled && !var.paused ? aws_lb.public[0].arn_suffix : ""
 }

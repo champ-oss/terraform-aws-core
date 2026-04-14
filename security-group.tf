@@ -84,3 +84,25 @@ resource "aws_security_group_rule" "app_self_rule" {
   self              = true
   security_group_id = aws_security_group.app[0].id
 }
+
+resource "aws_security_group" "alb_public_extra" {
+  count       = var.enabled && var.enable_extra_alb_public_sg ? 1 : 0
+  name_prefix = "${var.name}-alb-public-extra-"
+  vpc_id      = var.vpc_id
+  tags        = var.tags
+
+  lifecycle {
+    create_before_destroy = true
+  }
+}
+
+resource "aws_security_group_rule" "alb_public_extra_egress_internet" {
+  count             = var.enabled && var.enable_extra_alb_public_sg ? 1 : 0
+  description       = "internet"
+  type              = "egress"
+  from_port         = 443
+  to_port           = 443
+  protocol          = "tcp"
+  security_group_id = aws_security_group.alb_public_extra[0].id
+  cidr_blocks       = ["0.0.0.0/0"]
+}
