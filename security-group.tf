@@ -86,7 +86,7 @@ resource "aws_security_group_rule" "app_self_rule" {
 }
 
 resource "aws_security_group" "alb_public_extra" {
-  count       = var.enabled && var.enable_public_sg ? 1 : 0
+  count       = var.enabled && var.enable_extra_alb_public_sg ? 1 : 0
   name_prefix = "${var.name}-alb-public-extra-"
   vpc_id      = var.vpc_id
   tags        = var.tags
@@ -97,7 +97,7 @@ resource "aws_security_group" "alb_public_extra" {
 }
 
 resource "aws_security_group_rule" "alb_public_extra_egress_internet" {
-  count             = var.enabled && var.enable_public_sg ? 1 : 0
+  count             = var.enabled && var.enable_extra_alb_public_sg ? 1 : 0
   description       = "internet"
   type              = "egress"
   from_port         = 443
