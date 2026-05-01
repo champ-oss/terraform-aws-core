@@ -53,7 +53,7 @@ data "aws_subnets" "public" {
 
 module "acm" {
   count             = var.enabled ? 1 : 0
-  source            = "github.com/champ-oss/terraform-aws-acm.git?ref=v1.0.117-6aa9478"
+  source            = "github.com/champ-oss/terraform-aws-acm.git?ref=v1.0.119-839e443"
   git               = local.git
   domain_name       = "${local.git}.${data.aws_route53_zone.this.name}"
   create_wildcard   = false
