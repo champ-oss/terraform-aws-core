@@ -84,4 +84,4 @@ resource "aws_lb_listener_certificate" "this" {
   count           = (var.enabled && !var.paused) && length(var.additional_certificate_arns) > 0 ? length(var.additional_certificate_arns) : 0
   listener_arn    = aws_lb_listener.public_https[0].arn
   certificate_arn = var.additional_certificate_arns[count.index]
-}
+}  
