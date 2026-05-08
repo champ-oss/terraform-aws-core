@@ -1,5 +1,5 @@
 resource "aws_lb" "private" {
-  count                       = var.enabled && !var.paused ? 1 : 0
+  count                       = var.enabled && !var.paused && var.enable_lb ? 1 : 0
   name_prefix                 = "lb-pv-"
   security_groups             = [aws_security_group.alb[0].id]
   subnets                     = var.private_subnet_ids
@@ -32,7 +32,7 @@ resource "aws_lb" "private" {
 }
 
 resource "aws_lb_listener" "private_http" {
-  count             = var.enabled && !var.paused ? 1 : 0
+  count             = var.enabled && !var.paused && var.enable_lb ? 1 : 0
   load_balancer_arn = aws_lb.private[0].arn
   depends_on        = [aws_lb.private] # https://github.com/terraform-providers/terraform-provider-aws/issues/9976
   port              = "80"
@@ -54,13 +54,13 @@ resource "aws_lb_listener" "private_http" {
 }
 
 resource "aws_lb_listener" "private_https" {
-  count             = var.enabled && !var.paused ? 1 : 0
+  count             = var.enabled && !var.paused && var.enable_lb ? 1 : 0
   load_balancer_arn = aws_lb.private[0].arn
   depends_on        = [aws_lb.private] # https://github.com/terraform-providers/terraform-provider-aws/issues/9976
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = var.ssl_policy
-  certificate_arn   = var.certificate_arn
+  certificate_arn   = var.git
 
   default_action {
     type = "fixed-response"
