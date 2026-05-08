@@ -79,6 +79,7 @@ module "this" {
   enable_container_insights   = false
   enable_deletion_protection  = false
   enabled                     = var.enabled
+  enable_lb                   = true
 }
 
 # Create a simple ECS service to test Container Insights logging

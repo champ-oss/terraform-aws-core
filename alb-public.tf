@@ -1,5 +1,5 @@
 resource "aws_lb" "public" {
-  count                      = var.enabled && !var.paused ? 1 : 0
+  count                      = var.enabled && !var.paused && var.enable_lb ? 1 : 0
   name_prefix                = "lb-pb-"
   security_groups = concat(
     [aws_security_group.alb[0].id],
@@ -35,7 +35,7 @@ resource "aws_lb" "public" {
 }
 
 resource "aws_lb_listener" "public_http" {
-  count             = var.enabled && !var.paused ? 1 : 0
+  count             = var.enabled && !var.paused && var.enable_lb ? 1 : 0
   load_balancer_arn = aws_lb.public[0].arn
   depends_on        = [aws_lb.public] # https://github.com/terraform-providers/terraform-provider-aws/issues/9976
   port              = "80"
@@ -57,7 +57,7 @@ resource "aws_lb_listener" "public_http" {
 }
 
 resource "aws_lb_listener" "public_https" {
-  count             = var.enabled && !var.paused ? 1 : 0
+  count             = var.enabled && !var.paused && var.enable_lb ? 1 : 0
   load_balancer_arn = aws_lb.public[0].arn
   depends_on        = [aws_lb.public] # https://github.com/terraform-providers/terraform-provider-aws/issues/9976
   port              = "443"

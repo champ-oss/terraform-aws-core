@@ -109,3 +109,9 @@ variable "enable_extra_alb_public_sg" {
   type        = bool
   default     = false
 }
+
+variable "enable_lb" {
+  description = "Enables creation of load balancers and related resources"
+  type        = bool
+  default     = true
+}
