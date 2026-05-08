@@ -60,7 +60,7 @@ resource "aws_lb_listener" "private_https" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = var.ssl_policy
-  certificate_arn   = var.git
+  certificate_arn   = var.certificate_arn
 
   default_action {
     type = "fixed-response"
