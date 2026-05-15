@@ -115,3 +115,9 @@ variable "enable_lb" {
   type        = bool
   default     = true
 }
+
+variable "enable_waf" {
+  description = "Enables creation of WAF for load balancers and related resources"
+  type        = bool
+  default     = false
+}
