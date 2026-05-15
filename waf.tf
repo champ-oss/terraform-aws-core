@@ -1,6 +1,4 @@
-# AWS WAF for public load balancer #
 # Setup AWS WAF Web ACL
-
 resource "aws_wafv2_web_acl" "this" {
   count       = var.enabled && !var.paused && var.enable_lb ? 1 : 0 && var.enable_waf ? 1 : 0
   #name        = "${aws_lb.public[0].name}-waf"
