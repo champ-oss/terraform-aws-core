@@ -1,7 +1,7 @@
 # Setup AWS WAF Web ACL
 resource "aws_wafv2_web_acl" "this" {
-  count       = var.enabled && !var.paused && var.enable_lb ? 1 : 0 && var.enable_waf ? 1 : 0
-  #name        = "${aws_lb.public[0].name}-waf"
+  count       = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
+  #name       = "${aws_lb.public[0].name}-waf"
   name        = "${var.git}-waf"
   description = "WAF for AWS Resources"
   scope       = "REGIONAL"
@@ -179,27 +179,27 @@ resource "aws_wafv2_web_acl" "this" {
 
 # Associate Web ACL with Public ALB
 resource "aws_wafv2_web_acl_association" "this" {
-  count       = var.enabled && !var.paused && var.enable_lb ? 1 : 0 && var.enable_waf ? 1 : 0
+  count       = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
   resource_arn = aws_lb.public[0].arn
   web_acl_arn  = aws_wafv2_web_acl.this[count.index].arn
 }
 
 ### Setup cloudwatch logs for WAF
 resource "aws_cloudwatch_log_group" "waf" {
-  count             = var.enabled && !var.paused && var.enable_lb ? 1 : 0 && var.enable_waf ? 1 : 0
+  count             = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
   name_prefix       = "aws-waf-logs-${var.git}-"
   tags              = merge(local.tags, var.tags)
 }
 
 resource "aws_wafv2_web_acl_logging_configuration" "this" {
-  count                   = var.enabled && !var.paused && var.enable_lb ? 1 : 0 && var.enable_waf ? 1 : 0
+  count                   = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
   log_destination_configs = [aws_cloudwatch_log_group.waf[count.index].arn]
   resource_arn            = aws_wafv2_web_acl.this[count.index].arn
   depends_on              = [aws_cloudwatch_log_resource_policy.this]
 }
 
 resource "aws_cloudwatch_log_resource_policy" "this" {
-  count           = var.enabled && !var.paused && var.enable_lb ? 1 : 0 && var.enable_waf ? 1 : 0
+  count           = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
   policy_name     = "AWSLogs-${aws_cloudwatch_log_group.waf[count.index].name}-policy"
 
   policy_document = jsonencode({
