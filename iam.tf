@@ -101,3 +101,9 @@ resource "aws_iam_role_policy_attachment" "textract" {
   role       = aws_iam_role.this[0].name
 }
 
+resource "aws_iam_role_policy_attachment" "efs" {
+    count      = var.enabled ? 1 : 0
+    policy_arn = "arn:aws:iam::aws:policy/AmazonElasticFileSystemClientReadWriteAccess"
+    role       = aws_iam_role.this[0].name
+}
+
