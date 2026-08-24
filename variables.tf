@@ -123,7 +123,7 @@ variable "enable_waf" {
 }
 
 variable "idle_timeout" {
-  description = "The idle timeout value for load balancers, in seconds. The default is 60 seconds."
+  description = "The idle timeout value for load balancers. The default is 60 seconds."
   type        = number
   default     = 60
 }
