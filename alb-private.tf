@@ -6,6 +6,7 @@ resource "aws_lb" "private" {
   tags                        = merge(local.tags, var.tags)
   internal                    = true
   enable_deletion_protection  = var.enable_deletion_protection
+  idle_timeout                = var.idle_timeout
 
   dynamic "access_logs" {
   for_each = var.central_audit_bucket != null ? [1] : []
