@@ -176,7 +176,7 @@ resource "aws_wafv2_web_acl" "this" {
     }
   }
 
-  # Geofencing - block all non-US traffic
+  # Geofencing - count or block all non-US traffic (see var.waf_geo_block_action)
   dynamic "rule" {
     for_each = var.enable_waf_geo_block ? [1] : []
     content {
@@ -194,7 +194,15 @@ resource "aws_wafv2_web_acl" "this" {
       }
 
       action {
-        block {}
+        dynamic "count" {
+          for_each = var.waf_geo_block_action == "count" ? [1] : []
+          content {}
+        }
+
+        dynamic "block" {
+          for_each = var.waf_geo_block_action == "block" ? [1] : []
+          content {}
+        }
       }
 
       visibility_config {
