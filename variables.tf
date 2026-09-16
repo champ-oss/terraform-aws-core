@@ -122,6 +122,12 @@ variable "enable_waf" {
   default     = false
 }
 
+variable "waf_geo_block_action" {
+  description = "Enables WAF geofencing on non-US traffic and sets the rule action. Valid values are count (log only) or block. Leave empty to disable geofencing."
+  type        = string
+  default     = ""
+}
+
 variable "idle_timeout" {
   description = "The idle timeout value for load balancers. The default is 60 seconds."
   type        = number

@@ -1,6 +1,6 @@
 # Setup AWS WAF Web ACL
 resource "aws_wafv2_web_acl" "this" {
-  count       = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
+  count = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
   #name       = "${aws_lb.public[0].name}-waf"
   name        = "${var.git}-waf"
   description = "WAF for AWS Resources"
@@ -14,21 +14,21 @@ resource "aws_wafv2_web_acl" "this" {
   visibility_config {
     cloudwatch_metrics_enabled = true
     #metric_name                 = "${aws_lb.public[0].name}-web-acl"
-    metric_name = "${var.git}-web-acl"
-    sampled_requests_enabled     = true
+    metric_name              = "${var.git}-web-acl"
+    sampled_requests_enabled = true
   }
 
-# Setup AWS Managed Rules - CommonRuleSet
+  # Setup AWS Managed Rules - CommonRuleSet
   rule {
     name     = "AWSManagedRulesCommonRuleSet"
     priority = 0
-    
+
     statement {
       managed_rule_group_statement {
         name        = "AWSManagedRulesCommonRuleSet"
         vendor_name = "AWS"
         # Override specific rules to Count
-        
+
 
         rule_action_override {
           name = "NoUserAgent_HEADER"
@@ -164,31 +164,68 @@ resource "aws_wafv2_web_acl" "this" {
         }
       }
     }
-    
+
     override_action {
       count {}
     }
-    
+
     visibility_config {
       cloudwatch_metrics_enabled = true
       metric_name                = "${var.git}-AWSManagedCommonRuleSet"
       sampled_requests_enabled   = true
     }
   }
+
+  # Geofencing - count or block all non-US traffic (see var.waf_geo_block_action)
+  dynamic "rule" {
+    for_each = length(var.waf_geo_block_action) > 0 ? [1] : []
+    content {
+      name     = "GeoBlockNonUS"
+      priority = 1
+
+      statement {
+        not_statement {
+          statement {
+            geo_match_statement {
+              country_codes = ["US"]
+            }
+          }
+        }
+      }
+
+      action {
+        dynamic "count" {
+          for_each = var.waf_geo_block_action == "count" ? [1] : []
+          content {}
+        }
+
+        dynamic "block" {
+          for_each = var.waf_geo_block_action == "block" ? [1] : []
+          content {}
+        }
+      }
+
+      visibility_config {
+        cloudwatch_metrics_enabled = true
+        metric_name                = "${var.git}-GeoBlockNonUS"
+        sampled_requests_enabled   = true
+      }
+    }
+  }
 }
 
 # Associate Web ACL with Public ALB
 resource "aws_wafv2_web_acl_association" "this" {
-  count       = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
+  count        = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
   resource_arn = aws_lb.public[0].arn
   web_acl_arn  = aws_wafv2_web_acl.this[count.index].arn
 }
 
 ### Setup cloudwatch logs for WAF
 resource "aws_cloudwatch_log_group" "waf" {
-  count             = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
-  name_prefix       = "aws-waf-logs-${var.git}-"
-  tags              = merge(local.tags, var.tags)
+  count       = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
+  name_prefix = "aws-waf-logs-${var.git}-"
+  tags        = merge(local.tags, var.tags)
 }
 
 resource "aws_wafv2_web_acl_logging_configuration" "this" {
@@ -199,8 +236,8 @@ resource "aws_wafv2_web_acl_logging_configuration" "this" {
 }
 
 resource "aws_cloudwatch_log_resource_policy" "this" {
-  count           = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
-  policy_name     = "AWSLogs-${aws_cloudwatch_log_group.waf[count.index].name}-policy"
+  count       = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
+  policy_name = "AWSLogs-${aws_cloudwatch_log_group.waf[count.index].name}-policy"
 
   policy_document = jsonencode({
     Version = "2012-10-17",
@@ -208,13 +245,13 @@ resource "aws_cloudwatch_log_resource_policy" "this" {
       {
         Sid    = "AWSWAFLoggingPermissions",
         Effect = "Allow",
-        
+
         Principal = {
           Service = "delivery.logs.amazonaws.com"
         },
         Action = [
           "logs:CreateLogStream",
-          "logs:PutLogEvents"          
+          "logs:PutLogEvents"
         ],
         Resource = "${aws_cloudwatch_log_group.waf[count.index].arn}:*"
       }
