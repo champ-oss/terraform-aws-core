@@ -4,6 +4,9 @@ locals {
     cost    = "shared"
     creator = "terraform"
   }
+
+  # Geo fencing bypass is only wired up when an explicit list of CIDRs is supplied
+  waf_geo_fencing_bypass_enabled = var.enable_waf_geo_fencing && var.waf_geo_fencing_allowed_cidrs != null && length(coalesce(var.waf_geo_fencing_allowed_cidrs, [])) > 0
 }
 
 variable "git" {
@@ -126,4 +129,28 @@ variable "idle_timeout" {
   description = "The idle timeout value for load balancers. The default is 60 seconds."
   type        = number
   default     = 60
+}
+
+variable "enable_waf_geo_fencing" {
+  description = "Enables geo fencing rules on the WAF Web ACL (requires enable_waf)"
+  type        = bool
+  default     = false
+}
+
+variable "waf_allowed_country_codes" {
+  description = "Two letter ISO 3166-1 alpha-2 country codes allowed to reach the load balancer. When geo fencing is enabled and this list is set, requests originating from any other country are blocked."
+  type        = list(string)
+  default     = ["US"]
+}
+
+variable "waf_blocked_country_codes" {
+  description = "Two letter ISO 3166-1 alpha-2 country codes blocked from reaching the load balancer. Only used when geo fencing is enabled."
+  type        = list(string)
+  default     = []
+}
+
+variable "waf_geo_fencing_allowed_cidrs" {
+  description = "IPv4 CIDRs that are exempt from the WAF geo fencing rules, for example offshore contractors or VPN egress addresses. Leave null to skip creating the IP set entirely."
+  type        = list(string)
+  default     = null
 }
