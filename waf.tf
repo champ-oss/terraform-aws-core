@@ -178,7 +178,7 @@ resource "aws_wafv2_web_acl" "this" {
 
   # Geofencing - count or block all non-US traffic (see var.waf_geo_block_action)
   dynamic "rule" {
-    for_each = var.enable_waf_geo_block ? [1] : []
+    for_each = length(var.waf_geo_block_action) > 0 ? [1] : []
     content {
       name     = "GeoBlockNonUS"
       priority = 1

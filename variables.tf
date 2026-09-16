@@ -122,16 +122,10 @@ variable "enable_waf" {
   default     = false
 }
 
-variable "enable_waf_geo_block" {
-  description = "Enables WAF geofencing to block all non-US traffic"
-  type        = bool
-  default     = false
-}
-
 variable "waf_geo_block_action" {
-  description = "Action taken by the WAF geofencing rule on non-US traffic. Valid values are count (log only) or block."
+  description = "Enables WAF geofencing on non-US traffic and sets the rule action. Valid values are count (log only) or block. Leave empty to disable geofencing."
   type        = string
-  default     = "count"
+  default     = ""
 }
 
 variable "idle_timeout" {
