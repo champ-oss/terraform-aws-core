@@ -67,3 +67,23 @@ output "lb_public_arn_suffix" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/lb#arn_suffix"
   value       = var.enabled && !var.paused && var.enable_lb ? aws_lb.public[0].arn_suffix : ""
 }
+
+output "waf_ip_set_arn" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_ip_set#arn"
+  value       = try(aws_wafv2_ip_set.allow_list[0].arn, "")
+}
+
+output "waf_ip_set_addresses" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_ip_set#addresses"
+  value       = try(aws_wafv2_ip_set.allow_list[0].addresses, [])
+}
+
+output "waf_geo_exempt_ip_set_arn" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_ip_set#arn"
+  value       = try(aws_wafv2_ip_set.geo_exempt[0].arn, "")
+}
+
+output "waf_geo_exempt_ip_set_addresses" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_ip_set#addresses"
+  value       = try(aws_wafv2_ip_set.geo_exempt[0].addresses, [])
+}

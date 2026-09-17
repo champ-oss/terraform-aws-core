@@ -69,17 +69,29 @@ variable "enabled" {
 }
 
 module "this" {
-  source                      = "../../"
-  name                        = local.git
-  git                         = local.git
-  public_subnet_ids           = data.aws_subnets.public.ids
-  private_subnet_ids          = data.aws_subnets.private.ids
-  vpc_id                      = data.aws_vpcs.this.ids[0]
-  certificate_arn             = try(module.acm[0].arn, "")
-  enable_container_insights   = false
-  enable_deletion_protection  = false
-  enabled                     = var.enabled
-  enable_lb                   = true
+  source                     = "../../"
+  name                       = local.git
+  git                        = local.git
+  public_subnet_ids          = data.aws_subnets.public.ids
+  private_subnet_ids         = data.aws_subnets.private.ids
+  vpc_id                     = data.aws_vpcs.this.ids[0]
+  certificate_arn            = try(module.acm[0].arn, "")
+  enable_container_insights  = false
+  enable_deletion_protection = false
+  enabled                    = var.enabled
+  enable_lb                  = true
+  enable_waf                 = true
+
+  # Step 1: stage the ranges. Step 2: run the rule in count mode so nothing is blocked
+  # while the <git>-IPAllowList metric shows what "block" would reject.
+  # 203.0.113.0/24 is TEST-NET-3 and 198.51.100.42 is TEST-NET-2 (bare IP, normalized to /32).
+  waf_ip_allow_list        = ["203.0.113.0/24", "198.51.100.42"]
+  waf_ip_allow_list_action = "count"
+
+  # Separate list: ranges that bypass the WAF entirely, including the geo block.
+  # Also in count mode, so the rule is exercised without granting a real bypass.
+  waf_geo_exempt_ip_list = ["192.0.2.0/24"]
+  waf_geo_exempt_action  = "count"
 }
 
 # Create a simple ECS service to test Container Insights logging
