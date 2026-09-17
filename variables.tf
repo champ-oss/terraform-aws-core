@@ -128,6 +128,31 @@ variable "waf_geo_block_action" {
   default     = ""
 }
 
+variable "waf_ip_allow_list" {
+  description = "List of IPv4 CIDR ranges allowed through the WAF. A bare IP is treated as a /32. Populate this first, then set waf_ip_allow_list_action."
+  type        = list(string)
+  default     = []
+}
+
+variable "waf_ip_allow_list_action" {
+  description = "Enables the WAF IP allow list and sets the rule action for requests NOT in waf_ip_allow_list. Valid values are count (log only) or block. Leave empty to disable the allow list."
+  type        = string
+  default     = ""
+}
+
+variable "waf_geo_exempt_ip_list" {
+  description = "List of CIDR ranges that bypass the WAF entirely, including the geo block. A bare IP is treated as a /32. Separate from waf_ip_allow_list. Populate this first, then set waf_geo_exempt_action."
+  type        = list(string)
+  default     = []
+
+}
+
+variable "waf_geo_exempt_action" {
+  description = "Enables the WAF geo exempt rule at priority 0 and sets its action for requests from waf_geo_exempt_ip_list. Use count to log which requests would be exempted, or allow to actually grant the bypass. Leave empty to disable."
+  type        = string
+  default     = ""
+}
+
 variable "idle_timeout" {
   description = "The idle timeout value for load balancers. The default is 60 seconds."
   type        = number
