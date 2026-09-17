@@ -141,7 +141,7 @@ variable "waf_ip_allow_list_action" {
 }
 
 variable "waf_geo_exempt_ip_list" {
-  description = "List of IPv4 CIDR ranges that bypass the WAF entirely, including the geo block. A bare IP is treated as a /32. Separate from waf_ip_allow_list. Populate this first, then set waf_geo_exempt_action."
+  description = "List of ipv4 CIDR ranges that bypass the WAF entirely, including the geo block. A bare IP is treated as a /32. Separate from waf_ip_allow_list. Populate this first, then set waf_geo_exempt_action."
   type        = list(string)
   default     = []
 
