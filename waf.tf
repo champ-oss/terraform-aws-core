@@ -5,12 +5,6 @@ locals {
   # The allow list rule is only created once ranges have been added AND an action has been chosen.
   # Requiring both means an empty list can never block all traffic.
   enable_waf_ip_allow_list = length(var.waf_ip_allow_list) > 0 && var.waf_ip_allow_list_action != ""
-
-  # Geo exempt list is deliberately separate from waf_ip_allow_list: it grants a WAF bypass
-  # rather than restricting access, so the two lists rarely hold the same ranges.
-  waf_geo_exempt_ip_list = [for ip in var.waf_geo_exempt_ip_list : strcontains(ip, "/") ? ip : "${ip}/32"]
-
-  enable_waf_geo_exempt = length(var.waf_geo_exempt_ip_list) > 0 && var.waf_geo_exempt_action != ""
 }
 
 # Setup AWS WAF Web ACL
@@ -33,46 +27,10 @@ resource "aws_wafv2_web_acl" "this" {
     sampled_requests_enabled = true
   }
 
-  # Geo exempt - IPs in var.waf_geo_exempt_ip_list short-circuit the WAF (see var.waf_geo_exempt_action).
-  # This runs at priority 0, and an "allow" action is terminating, so a match skips EVERY rule below:
-  # the managed rule group, the geo block and the IP allow list. Run it in count mode first to see
-  # which requests would be exempted without actually granting the bypass.
-  dynamic "rule" {
-    for_each = local.enable_waf_geo_exempt ? [1] : []
-    content {
-      name     = "IPGeoExempt"
-      priority = 0
-
-      statement {
-        ip_set_reference_statement {
-          arn = aws_wafv2_ip_set.geo_exempt[0].arn
-        }
-      }
-
-      action {
-        dynamic "count" {
-          for_each = var.waf_geo_exempt_action == "count" ? [1] : []
-          content {}
-        }
-
-        dynamic "allow" {
-          for_each = var.waf_geo_exempt_action == "allow" ? [1] : []
-          content {}
-        }
-      }
-
-      visibility_config {
-        cloudwatch_metrics_enabled = true
-        metric_name                = "${var.git}-IPGeoExempt"
-        sampled_requests_enabled   = true
-      }
-    }
-  }
-
   # Setup AWS Managed Rules - CommonRuleSet
   rule {
     name     = "AWSManagedRulesCommonRuleSet"
-    priority = 1
+    priority = 0
 
     statement {
       managed_rule_group_statement {
@@ -232,7 +190,7 @@ resource "aws_wafv2_web_acl" "this" {
     for_each = length(var.waf_geo_block_action) > 0 ? [1] : []
     content {
       name     = "GeoBlockNonUS"
-      priority = 2
+      priority = 1
 
       statement {
         not_statement {
@@ -271,7 +229,7 @@ resource "aws_wafv2_web_acl" "this" {
     for_each = local.enable_waf_ip_allow_list ? [1] : []
     content {
       name     = "IPAllowList"
-      priority = 3
+      priority = 2
 
       statement {
         not_statement {
@@ -302,18 +260,6 @@ resource "aws_wafv2_web_acl" "this" {
       }
     }
   }
-}
-
-# IP ranges exempt from the WAF entirely, including the geo block. Kept separate from
-# aws_wafv2_ip_set.allow_list because this grants a bypass rather than restricting access.
-resource "aws_wafv2_ip_set" "geo_exempt" {
-  count              = var.enabled && !var.paused && var.enable_lb && var.enable_waf && length(var.waf_geo_exempt_ip_list) > 0 ? 1 : 0
-  name               = "${var.git}-waf-geo-exempt"
-  description        = "IP ranges exempt from the WAF geo block for ${var.git}"
-  scope              = "REGIONAL"
-  ip_address_version = "IPV4"
-  addresses          = local.waf_geo_exempt_ip_list
-  tags               = merge(local.tags, var.tags)
 }
 
 # IP ranges allowed through the WAF. Created as soon as ranges are supplied so they can be
