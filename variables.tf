@@ -126,6 +126,11 @@ variable "waf_geo_block_action" {
   description = "Enables WAF geofencing on non-US traffic and sets the rule action. Valid values are count (log only) or block. Leave empty to disable geofencing."
   type        = string
   default     = ""
+
+  validation {
+    condition     = contains(["", "count", "block"], var.waf_geo_block_action)
+    error_message = "waf_geo_block_action must be \"count\", \"block\", or \"\" to disable geofencing."
+  }
 }
 
 variable "waf_ip_allow_list" {
@@ -138,6 +143,11 @@ variable "waf_ip_allow_list_action" {
   description = "Enables the WAF IP allow list and sets the rule action for requests NOT in waf_ip_allow_list. Valid values are count (log only) or block. Leave empty to disable the allow list."
   type        = string
   default     = ""
+
+  validation {
+    condition     = contains(["", "count", "block"], var.waf_ip_allow_list_action)
+    error_message = "waf_ip_allow_list_action must be \"count\", \"block\", or \"\" to disable the allow list."
+  }
 }
 
 variable "idle_timeout" {
