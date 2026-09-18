@@ -1,20 +1,3 @@
-locals {
-  # Accept either a bare IP ("1.2.3.4") or a CIDR ("1.2.3.0/24"); wafv2 ip_set requires CIDR notation.
-  # split rather than strcontains so this module keeps working below Terraform 1.5.
-  waf_ip_allow_list = [for ip in var.waf_ip_allow_list : length(split("/", ip)) > 1 ? ip : "${ip}/32"]
-
-  # A rule's action block must contain exactly one action, so a rule is only created when its
-  # action is one we actually render below. Anything else (including "") leaves the rule out
-  # instead of emitting an empty action, which AWS rejects with EXACTLY_ONE_CONDITION_REQUIRED.
-  waf_rule_actions = ["count", "block"]
-
-  enable_waf_geo_block = contains(local.waf_rule_actions, var.waf_geo_block_action)
-
-  # The allow list rule is only created once ranges have been added AND an action has been chosen.
-  # Requiring both means an empty list can never block all traffic.
-  enable_waf_ip_allow_list = length(var.waf_ip_allow_list) > 0 && contains(local.waf_rule_actions, var.waf_ip_allow_list_action)
-}
-
 # Setup AWS WAF Web ACL
 resource "aws_wafv2_web_acl" "this" {
   count = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
@@ -195,7 +178,7 @@ resource "aws_wafv2_web_acl" "this" {
 
   # Geofencing - count or block all non-US traffic (see var.waf_geo_block_action)
   dynamic "rule" {
-    for_each = local.enable_waf_geo_block ? [1] : []
+    for_each = length(var.waf_geo_block_action) > 0 ? [1] : []
     content {
       name     = "GeoBlockNonUS"
       priority = 1
@@ -234,7 +217,7 @@ resource "aws_wafv2_web_acl" "this" {
   # (see var.waf_ip_allow_list_action). Run in count mode first and review the
   # ${var.git}-IPAllowList metric and sampled requests to find missing ranges before blocking.
   dynamic "rule" {
-    for_each = local.enable_waf_ip_allow_list ? [1] : []
+    for_each = length(var.waf_ip_allow_list) > 0 && length(var.waf_ip_allow_list_action) > 0 ? [1] : []
     content {
       name     = "IPAllowList"
       priority = 2
@@ -278,7 +261,7 @@ resource "aws_wafv2_ip_set" "allow_list" {
   description        = "IP ranges allowed through the WAF for ${var.git}"
   scope              = "REGIONAL"
   ip_address_version = "IPV4"
-  addresses          = local.waf_ip_allow_list
+  addresses          = var.waf_ip_allow_list
   tags               = merge(local.tags, var.tags)
 }
 

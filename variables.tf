@@ -129,7 +129,7 @@ variable "waf_geo_block_action" {
 }
 
 variable "waf_ip_allow_list" {
-  description = "List of IPv4 CIDR ranges allowed through the WAF. A bare IP is treated as a /32. Populate this first, then set waf_ip_allow_list_action."
+  description = "List of IPv4 CIDR ranges allowed through the WAF, for example [\"70.113.16.120/32\"]. Populate this first, then set waf_ip_allow_list_action."
   type        = list(string)
   default     = []
 }
