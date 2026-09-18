@@ -1,6 +1,7 @@
 locals {
-  # Accept either a bare IP ("1.2.3.4") or a CIDR ("1.2.3.0/24"); wafv2 ip_set requires CIDR notation
-  waf_ip_allow_list = [for ip in var.waf_ip_allow_list : strcontains(ip, "/") ? ip : "${ip}/32"]
+  # Accept either a bare IP ("1.2.3.4") or a CIDR ("1.2.3.0/24"); wafv2 ip_set requires CIDR notation.
+  # split rather than strcontains so this module keeps working below Terraform 1.5.
+  waf_ip_allow_list = [for ip in var.waf_ip_allow_list : length(split("/", ip)) > 1 ? ip : "${ip}/32"]
 
   # A rule's action block must contain exactly one action, so a rule is only created when its
   # action is one we actually render below. Anything else (including "") leaves the rule out
