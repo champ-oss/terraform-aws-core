@@ -85,11 +85,10 @@ module "this" {
   # Geofencing has been through count mode already, so it runs in block mode here.
   waf_geo_block_action = "block"
 
-  # The IP allow list is newer, so it is rolled out a step behind geofencing.
-  # Step 1: stage the ranges. Step 2: run the rule in count mode so nothing is blocked
-  # while the <git>-IPAllowList metric shows what "block" would reject.
-  # 203.0.113.0/24 is TEST-NET-3 and 198.51.100.42 is TEST-NET-2 (bare IP, normalized to /32).
-  waf_ip_allow_list        = ["203.0.113.0/24", "198.51.100.42"]
+  # The IP allow list is newer, so it is rolled out a step behind geofencing: it runs in count
+  # mode here, where nothing is blocked and the <git>-IPAllowList metric shows what "block"
+  # would reject. 203.0.113.0/24 is TEST-NET-3 and 198.51.100.42/32 is TEST-NET-2.
+  waf_ip_allow_list        = ["203.0.113.0/24", "198.51.100.42/32"]
   waf_ip_allow_list_action = "count"
 }
 
