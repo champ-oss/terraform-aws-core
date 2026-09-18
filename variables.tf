@@ -123,7 +123,7 @@ variable "enable_waf" {
 }
 
 variable "waf_geo_block_action" {
-  description = "Enables WAF geofencing on non-US traffic and sets the rule action. Valid values are count (log only) or block. Leave empty to disable geofencing."
+  description = "Enables WAF geofencing on non-US traffic and sets the rule action. Valid values are count (log only) or block. Leave empty to disable geofencing. This rule also supplies the geo labels that waf_ip_allow_list_regions matches on, so it must be set for that variable to take effect."
   type        = string
   default     = ""
 }
@@ -135,9 +135,15 @@ variable "waf_ip_allow_list" {
 }
 
 variable "waf_ip_allow_list_action" {
-  description = "Enables the WAF IP allow list and sets the rule action for requests NOT in waf_ip_allow_list. Valid values are count (log only) or block. Leave empty to disable the allow list."
+  description = "Enables the WAF IP allow list and sets the rule action for requests NOT in waf_ip_allow_list. Valid values are count (log only) or block. Leave empty to disable the allow list. The rule is only created when waf_ip_allow_list is also non-empty."
   type        = string
   default     = ""
+}
+
+variable "waf_ip_allow_list_regions" {
+  description = "ISO 3166-2 region codes, for example [\"US-TX\"], allowed through the WAF IP allow list rule in addition to waf_ip_allow_list. Requires waf_geo_block_action to be set, because that rule adds the geo labels this matches on."
+  type        = list(string)
+  default     = []
 }
 
 variable "idle_timeout" {

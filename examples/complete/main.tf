@@ -82,14 +82,16 @@ module "this" {
   enable_lb                  = true
   enable_waf                 = true
 
-  # Geofencing has been through count mode already, so it runs in block mode here.
-  waf_geo_block_action = "block"
+  # Both WAF rules run in count mode, so nothing is blocked and the <git>-GeoBlockNonUS and
+  # <git>-IPAllowList metrics show what "block" would reject. Geofencing also has to stay
+  # enabled for waf_ip_allow_list_regions below to work, because it adds the geo labels.
+  waf_geo_block_action = "count"
 
-  # The IP allow list is newer, so it is rolled out a step behind geofencing: it runs in count
-  # mode here, where nothing is blocked and the <git>-IPAllowList metric shows what "block"
-  # would reject. 203.0.113.0/24 is TEST-NET-3 and 198.51.100.42/32 is TEST-NET-2.
-  waf_ip_allow_list        = ["203.0.113.0/24", "198.51.100.42/32"]
-  waf_ip_allow_list_action = "count"
+  # The IP allow list rule passes traffic from these ranges OR from Texas, and counts the rest.
+  # 203.0.113.0/24 is TEST-NET-3 and 198.51.100.42/32 is TEST-NET-2.
+  waf_ip_allow_list         = ["203.0.113.0/24", "198.51.100.42/32"]
+  waf_ip_allow_list_action  = "count"
+  waf_ip_allow_list_regions = ["US-TX"]
 }
 
 # Create a simple ECS service to test Container Insights logging

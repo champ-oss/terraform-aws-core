@@ -213,9 +213,10 @@ resource "aws_wafv2_web_acl" "this" {
     }
   }
 
-  # IP allow list - count or block all traffic NOT originating from var.waf_ip_allow_list
-  # (see var.waf_ip_allow_list_action). Run in count mode first and review the
-  # ${var.git}-IPAllowList metric and sampled requests to find missing ranges before blocking.
+  # IP allow list - count or block all traffic NOT originating from var.waf_ip_allow_list or,
+  # when var.waf_ip_allow_list_regions is set, from one of those regions (see
+  # var.waf_ip_allow_list_action). Run in count mode first and review the ${var.git}-IPAllowList
+  # metric and sampled requests to find missing ranges before blocking.
   dynamic "rule" {
     for_each = length(var.waf_ip_allow_list) > 0 && length(var.waf_ip_allow_list_action) > 0 ? [1] : []
     content {
@@ -224,9 +225,39 @@ resource "aws_wafv2_web_acl" "this" {
 
       statement {
         not_statement {
-          statement {
-            ip_set_reference_statement {
-              arn = aws_wafv2_ip_set.allow_list[0].arn
+          dynamic "statement" {
+            for_each = length(var.waf_geo_block_action) > 0 && length(var.waf_ip_allow_list_regions) > 0 ? [] : [1]
+            content {
+              ip_set_reference_statement {
+                arn = aws_wafv2_ip_set.allow_list[0].arn
+              }
+            }
+          }
+
+          # Allow the IP ranges OR any request the GeoBlockNonUS rule at priority 1 labeled with
+          # an allowed region. That rule labels every request it inspects, and a label match can
+          # only read labels added by an earlier rule, so it has to stay at a lower priority.
+          dynamic "statement" {
+            for_each = length(var.waf_geo_block_action) > 0 && length(var.waf_ip_allow_list_regions) > 0 ? [1] : []
+            content {
+              or_statement {
+                statement {
+                  ip_set_reference_statement {
+                    arn = aws_wafv2_ip_set.allow_list[0].arn
+                  }
+                }
+
+                dynamic "statement" {
+                  for_each = var.waf_ip_allow_list_regions
+                  iterator = region
+                  content {
+                    label_match_statement {
+                      scope = "LABEL"
+                      key   = "awswaf:clientip:geo:region:${region.value}"
+                    }
+                  }
+                }
+              }
             }
           }
         }
