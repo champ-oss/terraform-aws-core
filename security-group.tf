@@ -5,6 +5,7 @@ resource "aws_security_group" "alb" {
   tags        = var.tags
 
   lifecycle {
+    ignore_changes        = [region]
     create_before_destroy = true
   }
 }
@@ -18,6 +19,10 @@ resource "aws_security_group_rule" "alb_egress_ecs" {
   protocol                 = "all"
   security_group_id        = aws_security_group.alb[0].id
   source_security_group_id = aws_security_group.app[0].id
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }
 
 resource "aws_security_group_rule" "alb_ingress_http" {
@@ -29,6 +34,10 @@ resource "aws_security_group_rule" "alb_ingress_http" {
   protocol          = "tcp"
   security_group_id = aws_security_group.alb[0].id
   cidr_blocks       = concat(["10.0.0.0/8"], var.cidr_blocks)
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }
 
 resource "aws_security_group_rule" "alb_ingress_https" {
@@ -40,6 +49,10 @@ resource "aws_security_group_rule" "alb_ingress_https" {
   protocol          = "tcp"
   security_group_id = aws_security_group.alb[0].id
   cidr_blocks       = concat(["10.0.0.0/8"], var.cidr_blocks)
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }
 
 resource "aws_security_group" "app" {
@@ -49,6 +62,7 @@ resource "aws_security_group" "app" {
   tags        = var.tags
 
   lifecycle {
+    ignore_changes        = [region]
     create_before_destroy = true
   }
 }
@@ -62,6 +76,10 @@ resource "aws_security_group_rule" "app_egress_internet" {
   protocol          = "all"
   security_group_id = aws_security_group.app[0].id
   cidr_blocks       = ["0.0.0.0/0"]
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }
 
 resource "aws_security_group_rule" "app_ingress_alb" {
@@ -73,6 +91,10 @@ resource "aws_security_group_rule" "app_ingress_alb" {
   protocol                 = "all"
   security_group_id        = aws_security_group.app[0].id
   source_security_group_id = aws_security_group.alb[0].id
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }
 
 resource "aws_security_group_rule" "app_self_rule" {
@@ -83,6 +105,10 @@ resource "aws_security_group_rule" "app_self_rule" {
   protocol          = "tcp"
   self              = true
   security_group_id = aws_security_group.app[0].id
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }
 
 resource "aws_security_group" "alb_public_extra" {
@@ -92,6 +118,7 @@ resource "aws_security_group" "alb_public_extra" {
   tags        = var.tags
 
   lifecycle {
+    ignore_changes        = [region]
     create_before_destroy = true
   }
 }
@@ -105,4 +132,8 @@ resource "aws_security_group_rule" "alb_public_extra_egress_internet" {
   protocol          = "tcp"
   security_group_id = aws_security_group.alb_public_extra[0].id
   cidr_blocks       = ["0.0.0.0/0"]
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }

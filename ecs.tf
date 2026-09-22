@@ -8,12 +8,20 @@ resource "aws_ecs_cluster" "this" {
     name  = "containerInsights"
     value = var.enable_container_insights ? "enabled" : "disabled"
   }
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }
 
 resource "aws_ecs_cluster_capacity_providers" "this" {
   count              = var.enabled ? 1 : 0
   cluster_name       = aws_ecs_cluster.this[0].name
   capacity_providers = ["FARGATE"]
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }
 
 # Wait before deleting the Container Insights log group since AWS still logs data even 2-3 minutes after the ECS cluster has been deleted. CLOUD-456
@@ -30,6 +38,6 @@ resource "aws_cloudwatch_log_group" "this" {
   tags              = merge(local.tags, var.tags)
 
   lifecycle {
-    ignore_changes = [name]
+    ignore_changes = [name, region]
   }
 }

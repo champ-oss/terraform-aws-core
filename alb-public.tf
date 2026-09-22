@@ -1,9 +1,9 @@
 resource "aws_lb" "public" {
-  count                      = var.enabled && !var.paused && var.enable_lb ? 1 : 0
-  name_prefix                = "lb-pb-"
+  count       = var.enabled && !var.paused && var.enable_lb ? 1 : 0
+  name_prefix = "lb-pb-"
   security_groups = concat(
     [aws_security_group.alb[0].id],
-      var.enable_extra_alb_public_sg ? [try(aws_security_group.alb_public_extra[0].id, null)] : []
+    var.enable_extra_alb_public_sg ? [try(aws_security_group.alb_public_extra[0].id, null)] : []
   )
   subnets                    = var.public_subnet_ids
   tags                       = merge(local.tags, var.tags)
@@ -31,6 +31,7 @@ resource "aws_lb" "public" {
   }
 
   lifecycle {
+    ignore_changes        = [region]
     create_before_destroy = true
   }
 }
@@ -53,6 +54,7 @@ resource "aws_lb_listener" "public_http" {
   }
 
   lifecycle {
+    ignore_changes        = [region]
     create_before_destroy = true
   }
 }
@@ -77,6 +79,7 @@ resource "aws_lb_listener" "public_https" {
   }
 
   lifecycle {
+    ignore_changes        = [region]
     create_before_destroy = true
   }
 }
@@ -85,4 +88,8 @@ resource "aws_lb_listener_certificate" "this" {
   count           = (var.enabled && !var.paused) && length(var.additional_certificate_arns) > 0 ? length(var.additional_certificate_arns) : 0
   listener_arn    = aws_lb_listener.public_https[0].arn
   certificate_arn = var.additional_certificate_arns[count.index]
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }  

@@ -251,6 +251,10 @@ resource "aws_wafv2_web_acl" "this" {
       }
     }
   }
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }
 
 # IP ranges allowed through the WAF. Created as soon as ranges are supplied so they can be
@@ -263,6 +267,10 @@ resource "aws_wafv2_ip_set" "allow_list" {
   ip_address_version = "IPV4"
   addresses          = var.waf_ip_allow_list
   tags               = merge(local.tags, var.tags)
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }
 
 # Associate Web ACL with Public ALB
@@ -270,6 +278,10 @@ resource "aws_wafv2_web_acl_association" "this" {
   count        = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
   resource_arn = aws_lb.public[0].arn
   web_acl_arn  = aws_wafv2_web_acl.this[count.index].arn
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }
 
 ### Setup cloudwatch logs for WAF
@@ -277,6 +289,10 @@ resource "aws_cloudwatch_log_group" "waf" {
   count       = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
   name_prefix = "aws-waf-logs-${var.git}-"
   tags        = merge(local.tags, var.tags)
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }
 
 resource "aws_wafv2_web_acl_logging_configuration" "this" {
@@ -284,6 +300,10 @@ resource "aws_wafv2_web_acl_logging_configuration" "this" {
   log_destination_configs = [aws_cloudwatch_log_group.waf[count.index].arn]
   resource_arn            = aws_wafv2_web_acl.this[count.index].arn
   depends_on              = [aws_cloudwatch_log_resource_policy.this]
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }
 
 resource "aws_cloudwatch_log_resource_policy" "this" {
@@ -308,4 +328,8 @@ resource "aws_cloudwatch_log_resource_policy" "this" {
       }
     ]
   })
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }

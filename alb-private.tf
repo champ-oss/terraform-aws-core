@@ -1,33 +1,34 @@
 resource "aws_lb" "private" {
-  count                       = var.enabled && !var.paused && var.enable_lb ? 1 : 0
-  name_prefix                 = "lb-pv-"
-  security_groups             = [aws_security_group.alb[0].id]
-  subnets                     = var.private_subnet_ids
-  tags                        = merge(local.tags, var.tags)
-  internal                    = true
-  enable_deletion_protection  = var.enable_deletion_protection
-  idle_timeout                = var.idle_timeout
+  count                      = var.enabled && !var.paused && var.enable_lb ? 1 : 0
+  name_prefix                = "lb-pv-"
+  security_groups            = [aws_security_group.alb[0].id]
+  subnets                    = var.private_subnet_ids
+  tags                       = merge(local.tags, var.tags)
+  internal                   = true
+  enable_deletion_protection = var.enable_deletion_protection
+  idle_timeout               = var.idle_timeout
 
   dynamic "access_logs" {
-  for_each = var.central_audit_bucket != null ? [1] : []
+    for_each = var.central_audit_bucket != null ? [1] : []
 
-  content {
-    enabled = true
-    bucket  = var.central_audit_bucket
+    content {
+      enabled = true
+      bucket  = var.central_audit_bucket
+    }
   }
-}
 
   dynamic "connection_logs" {
-  for_each = var.central_audit_bucket != null ? [1] : []
+    for_each = var.central_audit_bucket != null ? [1] : []
 
-  content {
-    enabled = true
-    bucket  = var.central_audit_bucket
-    prefix  = var.connection_logs_prefix
+    content {
+      enabled = true
+      bucket  = var.central_audit_bucket
+      prefix  = var.connection_logs_prefix
+    }
   }
-}
 
   lifecycle {
+    ignore_changes        = [region]
     create_before_destroy = true
   }
 }
@@ -50,6 +51,7 @@ resource "aws_lb_listener" "private_http" {
   }
 
   lifecycle {
+    ignore_changes        = [region]
     create_before_destroy = true
   }
 }
@@ -74,6 +76,7 @@ resource "aws_lb_listener" "private_https" {
   }
 
   lifecycle {
+    ignore_changes        = [region]
     create_before_destroy = true
   }
 }
@@ -82,4 +85,8 @@ resource "aws_lb_listener_certificate" "private" {
   count           = (var.enabled && !var.paused) && length(var.additional_certificate_arns) > 0 ? length(var.additional_certificate_arns) : 0
   listener_arn    = aws_lb_listener.private_https[0].arn
   certificate_arn = var.additional_certificate_arns[count.index]
+
+  lifecycle {
+    ignore_changes = [region]
+  }
 }
