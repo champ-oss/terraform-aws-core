@@ -210,14 +210,18 @@ survive in AWS with nothing managing it.
    under the new structure.
 
 Two things to know about the gap between those applies: the ALB has no Web ACL attached, so any
-rule that was blocking stops blocking; and the WAF log group is destroyed with everything else,
-taking its log events with it, so export anything you need to keep first. Metrics restart under
-new names too, since every rule is renamed with a `<git>` prefix in this release.
+rule that was blocking stops blocking; and step 1 runs on your current version, where the WAF log
+group is destroyed with everything else, taking its log events with it, so export anything you
+need to keep first. Metrics restart under new names too, since every rule is renamed with a
+`<git>` prefix in this release.
 
-The log group is now named `aws-waf-logs-<git>` rather than carrying a random suffix, so it can
-be addressed directly in a saved Logs Insights query; `waf_log_group_name` outputs it either
-way. AWS requires the name to start with `aws-waf-logs-`, so it cannot be moved to a
-`/aws/waf/` style path. It retains for `waf_log_retention` days, 365 by default.
+From this release the log group sets `skip_destroy`, so disabling the WAF or destroying the
+module leaves the group and its log events in place, expiring after `waf_log_retention` days
+(365 by default). It keeps the `aws-waf-logs-<git>-` name prefix so a later re-enable creates a
+fresh group rather than colliding with the one left behind; `waf_log_group_name` outputs the
+current one. The prefix is unchanged from earlier releases, so selecting log groups by the
+`aws-waf-logs-<git>-` prefix in Logs Insights queries the old and new groups together. AWS requires the name to start with `aws-waf-logs-`, so it cannot be moved to a
+`/aws/waf/` style path.
 
 | Change | Effect |
 |--------|--------|

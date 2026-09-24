@@ -346,16 +346,30 @@ resource "aws_wafv2_web_acl_association" "this" {
   count        = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
   resource_arn = aws_lb.public[0].arn
   web_acl_arn  = aws_wafv2_web_acl.this[count.index].arn
+
+  # The Web ACL blocks by default, so attach it to the load balancer only once its allow rules
+  # exist. Otherwise a fresh Web ACL can reject everything for the few seconds it takes them to
+  # be created.
+  depends_on = [
+    aws_wafv2_web_acl_rule.aws_managed,
+    aws_wafv2_web_acl_rule.ip_allow_list,
+    aws_wafv2_web_acl_rule.geo_state_labels,
+    aws_wafv2_web_acl_rule.state,
+    aws_wafv2_web_acl_rule.country_list,
+  ]
 }
 
 # WAF logs. The group name MUST start with "aws-waf-logs-" - AWS rejects any other name as a
-# logging destination, so this cannot be renamed to a /aws/waf/ style path. Named rather than
-# name_prefix so the group is predictable: Logs Insights queries, saved queries and any external
-# tooling can address it without a lookup, and the name survives a destroy and recreate.
+# logging destination, so this cannot be renamed to a /aws/waf/ style path. skip_destroy keeps
+# the group and its log events in AWS when the WAF is disabled, since they are the evidence trail
+# for who was allowed or rejected; they still expire after waf_log_retention days. That is also
+# why this uses name_prefix: a fixed name would collide with the group left behind the next time
+# the WAF is enabled. Use the waf_log_group_name output to find the current group.
 resource "aws_cloudwatch_log_group" "waf" {
   count             = var.enabled && !var.paused && var.enable_lb && var.enable_waf ? 1 : 0
-  name              = "aws-waf-logs-${var.git}"
+  name_prefix       = "aws-waf-logs-${var.git}-"
   retention_in_days = var.waf_log_retention
+  skip_destroy      = true
   tags              = merge(local.tags, var.tags)
 }
 
