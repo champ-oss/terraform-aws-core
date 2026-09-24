@@ -68,6 +68,21 @@ output "lb_public_arn_suffix" {
   value       = var.enabled && !var.paused && var.enable_lb ? aws_lb.public[0].arn_suffix : ""
 }
 
+output "waf_web_acl_arn" {
+  description = "ARN of the Web ACL, for attaching extra aws_wafv2_web_acl_rule resources from outside this module. The Web ACL carries ignore_changes on rule, so rules declared elsewhere are left alone. Use priorities 11-19 for rules that reject, so they run ahead of the allow rules, and 41-99 for rules that allow. https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_web_acl#arn"
+  value       = var.enabled && !var.paused && var.enable_waf ? try(aws_wafv2_web_acl.this[0].arn, "") : ""
+}
+
+output "waf_web_acl_name" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_web_acl#name"
+  value       = var.enabled && !var.paused && var.enable_waf ? try(aws_wafv2_web_acl.this[0].name, "") : ""
+}
+
+output "waf_log_group_name" {
+  description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/cloudwatch_log_group#name"
+  value       = var.enabled && !var.paused && var.enable_waf ? try(aws_cloudwatch_log_group.waf[0].name, "") : ""
+}
+
 output "waf_ip_set_arn" {
   description = "https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/wafv2_ip_set#arn"
   value       = var.enabled && !var.paused && var.enable_waf ? try(aws_wafv2_ip_set.allow_list[0].arn, "") : ""

@@ -82,14 +82,29 @@ module "this" {
   enable_lb                  = true
   enable_waf                 = true
 
-  # Geofencing has been through count mode already, so it runs in block mode here.
-  waf_geo_block_action = "block"
+  # Each list below adds a terminating allow rule, so the dimensions OR together: a request
+  # matching any one of them is allowed and the remaining rules are skipped. waf_default_action
+  # decides everything else and defaults to block. It is overridden to allow here so that this
+  # example never rejects CI traffic, whatever region the runner is in: requests matching no
+  # allow rule still pass, but are logged against Default_Action. Drop this line to get the
+  # module default and reject them.
+  waf_default_action = "allow"
 
-  # The IP allow list is newer, so it is rolled out a step behind geofencing: it runs in count
-  # mode here, where nothing is blocked and the <git>-IPAllowList metric shows what "block"
-  # would reject. 203.0.113.0/24 is TEST-NET-3 and 198.51.100.42/32 is TEST-NET-2.
-  waf_ip_allow_list        = ["203.0.113.0/24", "198.51.100.42/32"]
-  waf_ip_allow_list_action = "count"
+  # The managed rule group runs ahead of the allow rules, so allow listed traffic is still
+  # inspected. Counting only until its metric shows nothing legitimate being caught.
+  waf_aws_managed_rules_action = "count"
+
+  # Allowed from anywhere. 203.0.113.0/24 is TEST-NET-3, 198.51.100.42/32 is TEST-NET-2.
+  waf_ip_allow_list = ["203.0.113.0/24", "198.51.100.42/32"]
+
+  # All of the US, plus Ontario. waf_state takes one state, and it earns its place only when it
+  # names a subdivision of a country waf_country_list does not already cover, as CA-ON does
+  # here: setting "US-TX" alongside ["US"] would change where the request terminates, since
+  # priority 30 runs before 40, but no access decision, because priority 40 allows every US
+  # request anyway. Further states go in priorities 31-39 as your own rules, via the
+  # waf_web_acl_arn output.
+  waf_country_list = ["US"]
+  waf_state        = "CA-ON"
 }
 
 # Create a simple ECS service to test Container Insights logging

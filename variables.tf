@@ -122,22 +122,34 @@ variable "enable_waf" {
   default     = false
 }
 
-variable "waf_geo_block_action" {
-  description = "Enables WAF geofencing on non-US traffic and sets the rule action. Valid values are count (log only) or block. Leave empty to disable geofencing."
+variable "waf_log_retention" {
+  description = "Retention period in days for WAF logs. Defaults to 365, a year, which is longer than var.log_retention holds ALB and container logs because WAF records are the evidence trail for who was allowed or rejected. Must be a value CloudWatch accepts; 0 keeps logs forever."
+  type        = number
+  default     = 365
+}
+
+variable "waf_aws_managed_rules_action" {
+  description = "Sets the action for the AWS managed rule group at priority 10. Valid values are count (log only, the default) or block. Set to empty to leave the group out of the Web ACL entirely. This is the one rule that rejects rather than permits, and it runs ahead of the allow rules so that allow listed traffic is still inspected. On count the group runs in monitor mode, which also makes its per rule overrides inert, so promote it to block once the <git>-AWSManagedCommonRuleSet metric looks clean."
   type        = string
-  default     = ""
+  default     = "count"
 }
 
 variable "waf_ip_allow_list" {
-  description = "List of IPv4 CIDR ranges allowed through the WAF, for example [\"70.113.16.120/32\"]. Populate this first, then set waf_ip_allow_list_action."
+  description = "List of IPv4 CIDR ranges allowed through the WAF, for example [\"70.113.16.120/32\"]. Creates a terminating allow rule at priority 20; leave empty to omit it. The Web ACL blocks by default, so this widens what is permitted rather than narrowing it: an address listed here is allowed from anywhere, regardless of the state and country rules."
   type        = list(string)
   default     = []
 }
 
-variable "waf_ip_allow_list_action" {
-  description = "Enables the WAF IP allow list and sets the rule action for requests NOT in waf_ip_allow_list. Valid values are count (log only) or block. Leave empty to disable the allow list."
+variable "waf_state" {
+  description = "A single ISO 3166-2 state code, for example \"US-TX\", allowed through the WAF. Creates a terminating allow rule at priority 30 plus the GeoStateLabels rule at priority 29 that supplies the label it matches on; leave empty to omit both. One state rather than a list because label_match_statement matches a single label key. Priorities 31 to 39 are left free, so further states can be attached with your own aws_wafv2_web_acl_rule resources using the waf_web_acl_arn output."
   type        = string
   default     = ""
+}
+
+variable "waf_country_list" {
+  description = "ISO 3166-1 alpha-2 country codes allowed through the WAF, as a terminating allow rule at priority 40. Defaults to the US, so an otherwise unconfigured Web ACL allows US traffic and rejects everywhere else. Add countries to widen that, or set to [] to drop the rule, in which case one of the other lists has to permit your traffic instead."
+  type        = list(string)
+  default     = ["US"]
 }
 
 variable "idle_timeout" {
