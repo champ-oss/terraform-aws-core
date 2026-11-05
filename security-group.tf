@@ -20,6 +20,17 @@ resource "aws_security_group_rule" "alb_egress_ecs" {
   source_security_group_id = aws_security_group.app[0].id
 }
 
+# Needed for ALB to communicate with Cognito
+resource "aws_security_group_rule" "alb_egress_internet" {
+  description       = "internet"
+  type              = "egress"
+  from_port         = 0
+  to_port           = 65535
+  protocol          = "all"
+  security_group_id = aws_security_group.alb[0].id
+  cidr_blocks       = ["0.0.0.0/0"]
+}
+
 resource "aws_security_group_rule" "alb_ingress_http" {
   count             = var.enabled ? 1 : 0
   description       = "http"
