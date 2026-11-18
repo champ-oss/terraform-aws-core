@@ -211,7 +211,7 @@ resource "aws_wafv2_web_acl" "this" {
           }
         }
         rule_action_override {
-          name = "JHost_localhost_HEADER"
+          name = "Host_localhost_HEADER"
           action_to_use {
             count {}
          }
