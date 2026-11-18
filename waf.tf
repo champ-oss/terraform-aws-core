@@ -185,6 +185,7 @@ resource "aws_wafv2_web_acl" "this" {
       managed_rule_group_statement {
         name        = "AWSManagedRulesKnownBadInputsRuleSet"
         vendor_name = "AWS"
+        version     = "Version_1.28" # version of THIS managed rule group
 
           rule_action_override {
           name = "JavaDeserializationRCE_HEADER"
