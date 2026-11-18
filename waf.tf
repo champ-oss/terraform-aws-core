@@ -187,13 +187,13 @@ resource "aws_wafv2_web_acl" "this" {
         vendor_name = "AWS"
         version     = "Version_1.28" # version of THIS managed rule group
 
-          rule_action_override {
+        rule_action_override {
           name = "JavaDeserializationRCE_HEADER"
           action_to_use {
             count {}
           }
         }
-         rule_action_override {
+        rule_action_override {
           name = "JavaDeserializationRCE_BODY"
           action_to_use {
             count {}
@@ -205,7 +205,7 @@ resource "aws_wafv2_web_acl" "this" {
             count {}
           }
         }
-         rule_action_override {
+        rule_action_override {
           name = "JavaDeserializationRCE_URIPATH"
           action_to_use {
             count {}
@@ -215,39 +215,39 @@ resource "aws_wafv2_web_acl" "this" {
           name = "Host_localhost_HEADER"
           action_to_use {
             count {}
-         }
+          }
         }
-         rule_action_override {
+        rule_action_override {
           name = "PROPFIND_METHOD"
           action_to_use {
             count {}
           }
         }
-         rule_action_override {
+        rule_action_override {
           name = "ExploitablePaths_URIPATH"
           action_to_use {
             count {}
           }
         }
-         rule_action_override {
+        rule_action_override {
           name = "Log4JRCE_HEADER"
           action_to_use {
             count {}
           }
         }
-         rule_action_override {
+        rule_action_override {
           name = "Log4JRCE_QUERYSTRING"
           action_to_use {
             count {}
           }
         }
-         rule_action_override {
+        rule_action_override {
           name = "Log4JRCE_BODY"
           action_to_use {
             count {}
           }
         }
-         rule_action_override {
+        rule_action_override {
           name = "Log4JRCE_URIPATH"
           action_to_use {
             count {}
@@ -259,26 +259,26 @@ resource "aws_wafv2_web_acl" "this" {
             count {}
           }
         }
-         rule_action_override {
+        rule_action_override {
           name = "ApacheMod_HTTP2"
           action_to_use {
             count {}
           }
         }
-         # Java4Shell (CVE-2026-114938) rules in Count mode
-         rule_action_override {
+        # Java4Shell (CVE-2026-114938) rules in Count mode
+        rule_action_override {
           name = "Java4Shell_BODY"
           action_to_use {
             count {}
           }
         }
-         rule_action_override {
+        rule_action_override {
           name = "Java4Shell_QUERYARGUMENTS"
           action_to_use {
             count {}
           }
         }
-         rule_action_override {
+        rule_action_override {
           name = "Java4Shell_HEADER"
           action_to_use {
             count {}
