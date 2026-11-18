@@ -288,7 +288,7 @@ resource "aws_wafv2_web_acl" "this" {
     }
 
     override_action {
-      none {}
+      count {}
     }
 
     visibility_config {
